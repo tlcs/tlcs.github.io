@@ -5,3 +5,4 @@
 - Airline info?
 - Create a template - after a few runs
 - Add published-at information at home page
+- Catchy name and subtitle/slogan
