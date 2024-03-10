@@ -1,5 +1,7 @@
 
+- emojis?
 - Add "Assuming you work from Mon-Fri"
+- Ask to inform about outdated prices?
 - Add marker/warning of comfortable/uncomfortable flight (late departure, early etc.)
 - Add "Off the beaten path", historical book, more interesting recommendations overall
 - Airline info?
