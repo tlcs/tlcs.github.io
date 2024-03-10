@@ -11,7 +11,7 @@ plugins:             [jekyll-paginate, jekyll-sitemap, jekyll-feed, jekyll-seo-t
 
 # Customise atom feed settings (this is where Jekyll-Feed gets configuration information)
 title:		           "Lot 777"
-description:	       "a minimalist Jekyll theme for running a blog or publication"
+description:	       "Inspirujące kierunki podróży, w dobrym czasie i w dobrych cenach"
 author:              "Lot 777"
 
 # RSS 2.0 can be used instead of Atom by uncommenting following two lines
