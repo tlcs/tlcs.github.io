@@ -15,7 +15,7 @@ licznym zabytkom oraz bez wątpienia wspaniałej pogodzie, która jest niemal gw
 
 <br/>
 
-## 5 atutów:
+## 5 atrakcji
 
 <br/>
 
