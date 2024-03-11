@@ -2,8 +2,8 @@
 layout: post
 title: "Cypr na wiosnę i majówke od 400PLN!"
 author: "Lot777"
-categories: offers
-tags: [ offer ]
+categories: krakow
+tags: [ krakow, sunny, cyprus ]
 image: cyprus.jpg
 ---
 

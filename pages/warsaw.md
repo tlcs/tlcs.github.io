@@ -1,6 +1,6 @@
 ---
 layout: category
-title: Warszawa
+title: Wyloty z Warszawy
 category: warsaw
 permalink: /warsaw
 ---

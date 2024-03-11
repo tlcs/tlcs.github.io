@@ -1,5 +1,6 @@
 
 - emojis?
+- move "o nas"/"kontakt" or just style differently
 - Add "Assuming you work from Mon-Fri"
 - Ask to inform about outdated prices?
 - Add marker/warning of comfortable/uncomfortable flight (late departure, early etc.)
