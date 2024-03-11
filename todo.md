@@ -1,4 +1,5 @@
 
+- fix an issue with english airport names and no distinction for "other"
 - emojis?
 - move "o nas"/"kontakt" or just style differently
 - Add "Assuming you work from Mon-Fri"
