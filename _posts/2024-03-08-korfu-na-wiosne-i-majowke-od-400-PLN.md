@@ -62,3 +62,7 @@ licznym zabytkom oraz bez wątpienia wspaniałej pogodzie, która jest niemal gw
 - Polecany przewodnik: [Marco Polo Korfu](https://www.empik.com/korfu-opracowanie-zbiorowe,p1158053805,ksiazka-p)
 
 <br/>
+
+---
+
+<sup>*</sup> Dostępność i ceny biletów aktualne w momencie publikowania artykułu.
