@@ -8,6 +8,10 @@ google-ID: 'UA-112060364-2'
 
 menu:
 - {name: 'Oferty',             url: 'offers'}
+- {name: 'Krakow',             url: 'krakow'}
+- {name: 'Warszawa',           url: 'warsaw'}
+- {name: 'Inne miasta',        url: 'other'}
+
 - {name: 'O nas',              url: 'about'}
 - {name: 'Kontakt',            url: 'contact'}
 

@@ -2,8 +2,8 @@
 layout: post
 title: "Rzym na weekend poniżej 500PLN w kwietniu i maju"
 author: "Lot777"
-categories: offers
-tags: [ offer ]
+categories: warsaw
+tags: [ rome, sunny ]
 image: rome.jpg
 ---
 
