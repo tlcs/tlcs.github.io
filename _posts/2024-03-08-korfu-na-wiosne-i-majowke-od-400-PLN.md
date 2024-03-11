@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Korfu z Krakowa na wiosnę i majówkę od 400PLN!"
+title: "[Kraków] Korfu na wiosnę i majówkę od 400PLN!"
 author: "Lot777"
 categories: krakow
 tags: [ krakow, corfu, sunny ]

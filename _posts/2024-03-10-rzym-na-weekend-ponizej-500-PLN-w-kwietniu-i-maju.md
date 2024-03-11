@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Rzym na weekend poniżej 500PLN w kwietniu i maju"
+title: "[Kraków] Rzym na weekend poniżej 500PLN w kwietniu i maju"
 author: "Lot777"
-categories: warsaw
-tags: [ warsaw, rome, sunny ]
+categories: krakow
+tags: [krakow, rome, sunny ]
 image: rome.jpg
 ---
 
