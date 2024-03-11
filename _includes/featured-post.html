@@ -1,7 +1,7 @@
 <article>
   <a href="{{ site.github.url }}{{ post.url }}">
     <div class="featured-post" {% if post.image %}style="background-image:url({{ site.github.url }}/assets/img/{{ post.image }})"{% endif %}>
-      <small style="color: white;padding: 2px; background: rgba(0,0,0,0.7);">✈️{{ post.categories }}</small>
+      <small style="color: white;padding: 2px; background: rgba(0,0,0,0.7);">✈️ {{ post.categories | capitalize }}</small>
       <h2><span>{{ post.title }}</span></h2>
     </div>
   </a>
