@@ -8,3 +8,7 @@
 - Create a template - after a few runs
 - Add published-at information at home page
 - Catchy name and subtitle/slogan
+- best meal/food info
+- nice video link?
+- culture - one of: best song, best video, best book
+- image licenses
