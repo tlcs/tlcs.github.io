@@ -7,7 +7,7 @@ disqus:
 google-ID: ''
 
 menu:
-- {name: 'Krakow',             url: 'krakow'}
+- {name: 'Kraków',             url: 'krakow'}
 - {name: 'Warszawa',           url: 'warsaw'}
 - {name: 'Inne miasta',        url: 'other'}
 
