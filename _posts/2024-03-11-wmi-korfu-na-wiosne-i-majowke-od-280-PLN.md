@@ -1,10 +1,10 @@
 ---
 layout: post
-title: "Korfu na wiosnę i majówkę od 400PLN!"
+title: "Korfu na wiosnę i majówkę od 280PLN!"
 author: "Lot777"
 categories: warsaw
 tags: [ warsaw, corfu, sunny ]
-image: corfu.webp
+image: corfu-2.jpg
 ---
 
 # Dlaczego Korfu?

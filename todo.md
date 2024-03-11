@@ -1,5 +1,7 @@
 
 - fix an issue with english airport names and no distinction for "other"
+- should I add more variety to images/description of the same destination
+
 - emojis?
 - move "o nas"/"kontakt" or just style differently
 - Add "Assuming you work from Mon-Fri"
