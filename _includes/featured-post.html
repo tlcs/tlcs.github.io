@@ -2,7 +2,8 @@
   <a href="{{ site.github.url }}{{ post.url }}">
     <div class="featured-post" {% if post.image %}style="background-image:url({{ site.github.url }}/assets/img/{{ post.image }})"{% endif %}>
       <h2><span>{{ post.title }}</span></h2>
-      <small>{{ post.date | date: "%B %-d, %Y" }}</small>
     </div>
   </a>
+  <!-- tweak it  -->
+  <small style="color: white;padding: 2px; background: rgba(0,0,0,0.7);">{{ post.date | date: "%d/%m/%Y"}}</small>
 </article>
