@@ -1,0 +1,19 @@
+# Secrets — never commit. Holds the YouTube Data API v3 key used only at
+# authoring time by tools/fetch-channels.mjs. See "The API key" in README.md.
+.keys
+
+# Editor / IDE
+.idea/
+.vscode/
+
+# Claude Code local overrides (launch.json is shared on purpose)
+.claude/settings.local.json
+
+# macOS
+.DS_Store
+
+# Node (no runtime deps today, but keep it out if any appear)
+node_modules/
+npm-debug.log*
+
+.claude/

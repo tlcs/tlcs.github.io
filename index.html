@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroTV</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="room">
+    <div class="setup">
+
+      <div class="tv" id="tv">
+        <div class="bezel">
+          <div class="screen">
+            <div id="yt-player"></div>
+            <canvas id="static-canvas" width="200" height="150"></canvas>
+            <div class="crt-overlay"></div>
+            <div id="guide" class="guide"></div>
+            <div id="screen-off" class="screen-off covering"></div>
+          </div>
+        </div>
+
+        <div class="front-panel">
+          <div class="badge">
+            <span class="brand">TELSTAR</span>
+            <span class="model">CX-2140 STEREO</span>
+          </div>
+          <div class="led-window"><span id="led" class="led"></span></div>
+          <div class="panel-buttons">
+            <button class="tv-btn" data-action="ch-down" title="Channel down">CH &minus;</button>
+            <button class="tv-btn" data-action="ch-up" title="Channel up">CH +</button>
+            <button class="tv-btn" data-action="vol-down" title="Volume down">VOL &minus;</button>
+            <button class="tv-btn" data-action="vol-up" title="Volume up">VOL +</button>
+            <button class="tv-btn" data-action="guide" title="Programme guide">GUIDE</button>
+            <div class="cinema-cluster">
+              <span id="cinema-light" class="indicator-light cinema-light" aria-hidden="true"></span>
+              <button class="tv-btn" data-action="cinema" title="Cinema mode (C)" aria-pressed="false">CINEMA</button>
+            </div>
+          </div>
+          <div class="speaker" aria-hidden="true"></div>
+          <div class="power-cluster">
+            <span id="power-light" class="power-light"></span>
+            <button class="tv-btn power" data-action="power" title="Power">&#9211;</button>
+          </div>
+        </div>
+        <div class="feet" aria-hidden="true"><span></span><span></span></div>
+      </div>
+
+      <div class="remote" aria-label="Remote control">
+        <div class="remote-top">
+          <span class="remote-ir"></span>
+          <button class="r-btn r-power" data-action="power" title="Power">&#9211;</button>
+        </div>
+        <div class="remote-digits">
+          <button class="r-btn" data-action="digit" data-value="1">1</button>
+          <button class="r-btn" data-action="digit" data-value="2">2</button>
+          <button class="r-btn" data-action="digit" data-value="3">3</button>
+          <button class="r-btn" data-action="digit" data-value="4">4</button>
+          <button class="r-btn" data-action="digit" data-value="5">5</button>
+          <button class="r-btn" data-action="digit" data-value="6">6</button>
+          <button class="r-btn" data-action="digit" data-value="7">7</button>
+          <button class="r-btn" data-action="digit" data-value="8">8</button>
+          <button class="r-btn" data-action="digit" data-value="9">9</button>
+          <button class="r-btn" data-action="mute" title="Mute">&#128263;</button>
+          <button class="r-btn" data-action="digit" data-value="0">0</button>
+          <button class="r-btn" data-action="guide" title="Guide">&#9776;</button>
+        </div>
+        <div class="remote-rockers">
+          <div class="rocker">
+            <button class="r-btn" data-action="ch-up" title="Channel up">&#9650;</button>
+            <span class="rocker-label">CH</span>
+            <button class="r-btn" data-action="ch-down" title="Channel down">&#9660;</button>
+          </div>
+          <div class="rocker">
+            <button class="r-btn" data-action="vol-up" title="Volume up">&#9650;</button>
+            <span class="rocker-label">VOL</span>
+            <button class="r-btn" data-action="vol-down" title="Volume down">&#9660;</button>
+          </div>
+        </div>
+        <button class="r-btn r-cinema" data-action="cinema" title="Cinema mode (C)" aria-pressed="false">CINEMA</button>
+        <span class="remote-brand">TELSTAR</span>
+      </div>
+
+    </div>
+    <p class="hint">&#9211; power &nbsp; &uarr;&darr; channel &nbsp; &larr;&rarr; volume &nbsp; 0&ndash;9 direct &nbsp; M mute &nbsp; G guide &nbsp; C cinema</p>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

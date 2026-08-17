@@ -1,0 +1,488 @@
+/* RetroTV — early-90s (c. 1994) plastic CRT set in a dark room */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --plastic-hi: #4a4a4e;
+  --plastic: #323236;
+  --plastic-lo: #1c1c1f;
+  --led-green: #4dff6a;
+  --font-ui: "Helvetica Neue", Arial, sans-serif;
+
+  /* Cabinet geometry. Cinema mode works by overriding these on body.cinema —
+     everything downstream (screen, iframe) is derived, so nothing else moves. */
+  --tube-ratio: 1.33333;   /* 4:3 tube; aspect-ratio accepts a bare number */
+  --cab-pad-x: 22px;
+  --cab-pad-top: 22px;
+  --cab-pad-bottom: 12px;
+  --bezel-pad: 14px;
+  --chrome-v: 200px;       /* vertical space everything-but-the-screen consumes */
+  --tv-w-cap: 880px;
+  --side-reserve: 8vw;     /* room padding + gap + remote column */
+  --cab-ease: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body { height: 100%; }
+
+body {
+  background: radial-gradient(ellipse at 50% 35%, #17171c 0%, #0a0a0d 60%, #050507 100%);
+  font-family: var(--font-ui);
+  color: #ccc;
+  overflow-x: hidden;
+}
+
+.room {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4vmin 2vmin;
+  gap: 18px;
+}
+
+.setup {
+  display: flex;
+  align-items: flex-end;
+  gap: 34px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hint {
+  font-size: 12px;
+  color: #55555e;
+  letter-spacing: 0.06em;
+}
+
+/* ---- TV cabinet ---------------------------------------------------------- */
+
+.tv {
+  /* tube ratio, plus bezel/panel chrome — keep the whole set in view */
+  width: min(
+    var(--tv-w-cap),
+    calc(100vw - var(--side-reserve)),
+    calc((100dvh - var(--chrome-v)) * var(--tube-ratio))
+  );
+  background:
+    linear-gradient(160deg, var(--plastic-hi) 0%, var(--plastic) 18%, var(--plastic-lo) 90%);
+  border-radius: 16px / 14px;
+  padding: var(--cab-pad-top) var(--cab-pad-x) var(--cab-pad-bottom);
+  transition: width var(--cab-ease), padding var(--cab-ease);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.10),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+/* glow spilling out of the screen when on */
+.tv.on { box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.10),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.8),
+    0 0 90px rgba(140, 160, 255, 0.07);
+}
+
+.bezel {
+  background: linear-gradient(170deg, #232327, #101012);
+  border-radius: 12px / 11px;
+  padding: var(--bezel-pad);
+  transition: padding var(--cab-ease);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 14px rgba(0, 0, 0, 0.9);
+}
+
+.screen {
+  position: relative;
+  aspect-ratio: var(--tube-ratio);
+  transition: aspect-ratio var(--cab-ease);
+  background: #000;
+  border-radius: 4.5% / 6%;   /* gentle CRT curvature */
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+}
+
+.screen iframe,
+.screen #yt-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#static-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  display: none;
+  z-index: 3;
+}
+#static-canvas.visible { display: block; }
+
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.11) 0px,
+      rgba(0, 0, 0, 0.11) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.05) 0%, transparent 22%);
+}
+
+.screen-off {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: #050505;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.screen-off.covering { opacity: 1; pointer-events: auto; }
+
+/* ---- Teletext-style guide ------------------------------------------------- */
+
+.guide {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  background: rgba(0, 0, 20, 0.92);
+  color: #e8e8e8;
+  font-family: "Courier New", monospace;
+  font-size: clamp(10px, 1.9vmin, 16px);
+  line-height: 1.55;
+  padding: 3% 4%;
+}
+.guide.open { display: flex; }
+
+.guide-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  color: #ffe100;
+  background: #003;
+  padding: 0.15em 0.6em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.guide-body {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0.6em 0;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a55 transparent;
+}
+.guide-body::-webkit-scrollbar { width: 6px; }
+.guide-body::-webkit-scrollbar-thumb { background: #2a2a55; border-radius: 3px; }
+.guide-body::-webkit-scrollbar-track { background: transparent; }
+
+.guide-row { display: flex; gap: 1.4em; padding: 0 0.6em; }
+.guide-row.current { background: #00a000; color: #001000; }
+.guide-time { color: #37e6e6; flex-shrink: 0; }
+.guide-row.current .guide-time { color: #001000; }
+.guide-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.guide-footer {
+  color: #37e6e6;
+  text-align: center;
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+}
+
+/* ---- Front panel ---------------------------------------------------------- */
+
+.front-panel {
+  display: flex;
+  align-items: center;
+  /* on a short/narrow cabinet the controls wrap to a second row rather than
+     spilling outside the plastic */
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 8px 6px 6px;
+}
+
+/* Shrink priority when the cabinet is narrow: the decorative speaker grille
+   gives way first, then the badge. The controls never squash. */
+.badge { display: flex; flex-direction: column; min-width: 110px; flex-shrink: 2; }
+.led-window, .panel-buttons, .power-cluster { flex-shrink: 0; }
+.brand {
+  white-space: nowrap;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-size: 17px;
+  color: #b9b9c2;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+.model {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: #6a6a72;
+  margin-top: 2px;
+}
+
+.led-window {
+  background: #0a0d0a;
+  border-radius: 4px;
+  min-width: 78px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9), inset 0 0 2px #000;
+  border: 1px solid #101014;
+}
+
+.led {
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--led-green);
+  text-shadow: 0 0 6px rgba(77, 255, 106, 0.8), 0 0 14px rgba(77, 255, 106, 0.35);
+  white-space: pre;
+}
+
+.panel-buttons { display: flex; gap: 7px; }
+
+.tv-btn {
+  background: linear-gradient(180deg, #47474c, #26262a 60%, #1a1a1d);
+  border: 1px solid #121214;
+  border-radius: 4px;
+  color: #a9a9b2;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 8px 9px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.tv-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.speaker {
+  /* zero basis: soaks up slack when there is any, collapses silently when there
+     isn't — so it never pushes the controls onto a second row */
+  flex: 1 1 0;
+  align-self: stretch;
+  min-width: 0;
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #26262a 0px, #26262a 2px,
+    #121215 2px, #121215 5px
+  );
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.power-cluster { display: flex; align-items: center; gap: 9px; }
+.cinema-cluster { display: flex; align-items: center; gap: 6px; }
+
+.indicator-light {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #401313;
+  box-shadow: inset 0 0 2px #000;
+}
+.power-light.on {
+  background: #ff3b30;
+  box-shadow: 0 0 7px rgba(255, 59, 48, 0.9);
+}
+
+.cinema-light { background: #3a2c10; }
+.cinema-light.on {
+  background: #ffb020;
+  box-shadow: 0 0 7px rgba(255, 176, 32, 0.9);
+}
+
+.tv-btn.active { color: #ffd48a; border-color: #6a5220; }
+
+.tv-btn.power { font-size: 13px; padding: 7px 12px; }
+
+.feet {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 60px;
+}
+.feet span {
+  display: block;
+  width: 90px;
+  height: 12px;
+  background: linear-gradient(180deg, #1b1b1e, #0c0c0e);
+  border-radius: 0 0 6px 6px;
+  transform: translateY(12px);
+}
+
+/* ---- Remote control -------------------------------------------------------- */
+
+.remote {
+  width: 108px;
+  background: linear-gradient(170deg, #38383d, #1d1d21 80%);
+  border-radius: 14px;
+  padding: 12px 10px 14px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    0 14px 30px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.remote-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remote-ir {
+  width: 26px;
+  height: 8px;
+  border-radius: 4px;
+  background: #14090a;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+.r-btn {
+  background: linear-gradient(180deg, #4c4c52, #2a2a2f 70%);
+  border: 1px solid #101013;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: #c2c2cb;
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.r-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.55), inset 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.r-power {
+  background: linear-gradient(180deg, #a1352c, #641711 70%);
+  color: #ffd9d5;
+}
+
+/* wide labelled function button, like the extras row on a real 90s remote */
+.r-cinema {
+  border-radius: 6px;
+  width: 100%;
+  height: 18px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+.r-cinema.active {
+  background: linear-gradient(180deg, #5a4a2c, #332616 70%);
+  color: #ffd48a;
+}
+
+.remote-digits {
+  display: grid;
+  grid-template-columns: repeat(3, 24px);
+  gap: 8px;
+}
+
+.remote-rockers { display: flex; gap: 14px; }
+
+.rocker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.rocker .r-btn { border-radius: 7px; width: 26px; height: 22px; }
+.rocker-label {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: #85858e;
+}
+
+.remote-brand {
+  font-style: italic;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #77777f;
+}
+
+/* ---- Small screens --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .setup { align-items: center; }
+  .remote { flex-direction: row; width: auto; margin-bottom: 0; padding: 10px 14px; }
+  .remote-top { width: auto; }
+  .front-panel { flex-wrap: wrap; }
+  .feet { display: none; }
+}
+
+/* ---- Cinema mode ------------------------------------------------------------
+   Widescreen tube + minimal chrome. The set, the LED, the remote and the key
+   hints all stay on screen — only the plastic around them gives way.          */
+
+body.cinema {
+  --tube-ratio: 1.77778;   /* 16:9 — kills the letterbox bars on YouTube video */
+  --cab-pad-x: 10px;
+  --cab-pad-top: 10px;
+  --cab-pad-bottom: 6px;
+  --bezel-pad: 7px;
+  --chrome-v: 84px;        /* measured: exact fit is ~68px, this keeps a safety margin */
+  --tv-w-cap: 100vw;
+  --side-reserve: 150px;   /* remote 108 + setup gap 16 + room padding 16 + slack */
+  overflow: hidden;        /* deterministic: no scrollbars in cinema */
+}
+
+body.cinema .room { height: 100dvh; padding: 8px; gap: 6px; }
+body.cinema .setup { gap: 16px; }
+body.cinema .feet { display: none; }
+body.cinema .front-panel { gap: 10px; margin-top: 6px; padding: 3px 4px 2px; }
+body.cinema .model { display: none; }
+body.cinema .brand { font-size: 13px; }
+body.cinema .badge { min-width: 0; }
+body.cinema .led-window { height: 26px; min-width: 68px; }
+body.cinema .led { font-size: 16px; }
+body.cinema .tv-btn { padding: 5px 7px; }
+body.cinema .tv-btn.power { font-size: 11px; padding: 5px 9px; }
+body.cinema .remote { transform: scale(0.9); transform-origin: bottom center; margin-bottom: 0; }
+body.cinema .hint { font-size: 10px; opacity: 0.7; }
+
+@media (max-width: 700px) {
+  /* remote reflows below the set, so the reserve moves from across to down */
+  body.cinema { --side-reserve: 16px; --chrome-v: 190px; }
+  body.cinema .remote { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv, .bezel, .screen { transition: none; }
+}
