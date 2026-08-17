@@ -457,7 +457,14 @@ body {
 @media (max-width: 700px) {
   .setup { align-items: center; }
   .remote { flex-direction: row; width: auto; margin-bottom: 0; padding: 10px 14px; }
-  .remote-top { width: auto; }
+  /* laid on its side, the IR window would sit alongside the power button and read
+     as a stray dash — stack it underneath instead (column-reverse: power on top) */
+  .remote-top {
+    width: auto;
+    flex-direction: column-reverse;
+    justify-content: center;
+    gap: 7px;
+  }
   .front-panel { flex-wrap: wrap; }
   .feet { display: none; }
 }
