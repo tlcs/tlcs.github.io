@@ -41,7 +41,11 @@
           <div class="speaker" aria-hidden="true"></div>
           <div class="power-cluster">
             <span id="power-light" class="power-light"></span>
-            <button class="tv-btn power" data-action="power" title="Power">&#9211;</button>
+            <button class="tv-btn power" data-action="power" title="Power" aria-label="Power">
+              <svg class="ico-power" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 3.6v8.2"/><path d="M7.1 6.5a7 7 0 1 0 9.8 0"/>
+              </svg>
+            </button>
           </div>
         </div>
         <div class="feet" aria-hidden="true"><span></span><span></span></div>
@@ -50,7 +54,11 @@
       <div class="remote" aria-label="Remote control">
         <div class="remote-top">
           <span class="remote-ir"></span>
-          <button class="r-btn r-power" data-action="power" title="Power">&#9211;</button>
+          <button class="r-btn r-power" data-action="power" title="Power" aria-label="Power">
+            <svg class="ico-power" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3.6v8.2"/><path d="M7.1 6.5a7 7 0 1 0 9.8 0"/>
+            </svg>
+          </button>
         </div>
         <div class="remote-digits">
           <button class="r-btn" data-action="digit" data-value="1">1</button>
@@ -83,7 +91,7 @@
       </div>
 
     </div>
-    <p class="hint">&#9211; power &nbsp; &uarr;&darr; channel &nbsp; &larr;&rarr; volume &nbsp; 0&ndash;9 direct &nbsp; M mute &nbsp; G guide &nbsp; C cinema</p>
+    <p class="hint">P power &nbsp; &uarr;&darr; channel &nbsp; &larr;&rarr; volume &nbsp; 0&ndash;9 direct &nbsp; M mute &nbsp; G guide &nbsp; C cinema</p>
   </main>
   <script type="module" src="app.js"></script>
 </body>
