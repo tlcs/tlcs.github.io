@@ -1,55 +1,530 @@
 {
-  "generatedAt": "2026-08-14T22:42:08.065Z",
+  "generatedAt": "2026-08-17T20:57:12.756Z",
   "channels": [
     {
       "number": 1,
-      "name": "MOVIE ONE",
+      "name": "Motoryzacja",
       "videos": [
         {
-          "id": "aqz-KE-bpKQ",
-          "title": "Big Buck Bunny 60fps 4K - Official Blender Foundation Short Film",
-          "duration": 635
+          "id": "G402LhGrvQg",
+          "title": "Kultowy \"Magazyn Auto\" - odcinek z dn. 27.02.1999",
+          "duration": 1057
         },
         {
-          "id": "eRsGyueVLvQ",
-          "title": "Sintel - Open Movie by Blender Foundation",
-          "duration": 888
+          "id": "lJw0r8xWFuQ",
+          "title": "Kultowy \"Magazyn Auto\" - odcinek z dn. 12.02.2000",
+          "duration": 1082
         },
         {
-          "id": "WhWc3b3KhnY",
-          "title": "Spring - Blender Open Movie",
-          "duration": 465
+          "id": "XiGObtCjIvU",
+          "title": "Kultowy \"Magazyn Auto\" - odcinek z dn. 22.02.2000",
+          "duration": 1083
         },
         {
-          "id": "R6MlUcmOul8",
-          "title": "Tears of Steel - Blender VFX Open Movie",
-          "duration": 735
+          "id": "RkJSf6Tv6no",
+          "title": "MERCEDES C 180 W202 Auto -Test AUTO-MAGAZYN PL",
+          "duration": 458
+        },
+        {
+          "id": "iuwYVNMPju8",
+          "title": "Auto Magazyn",
+          "duration": 1304
+        },
+        {
+          "id": "uuln3Wc_5hQ",
+          "title": "Peugeot 405 1.6 Made In Poland - FSC Lublin Auto-Test Auto-Magazyn mklstardust",
+          "duration": 492
+        },
+        {
+          "id": "8mst3JadGlA",
+          "title": "Peugeot 306 Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 467
+        },
+        {
+          "id": "MXZYVmIOMik",
+          "title": "Audi 80 B4 1.6 + bonus Auto-Test Auto-Magazyn mklstardust",
+          "duration": 368
+        },
+        {
+          "id": "qboKehmbgxA",
+          "title": "Honda Accord Auto-Test Auto - Magazyn PL",
+          "duration": 422
+        },
+        {
+          "id": "1_XU1WesIUM",
+          "title": "Ford Mondeo MK1 Kombi 1.8 TD Auto Test PL Auto Magazyn",
+          "duration": 423
+        },
+        {
+          "id": "68eczjSN3CQ",
+          "title": "Fiat Tempra S.W. 1.9 TD Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 374
+        },
+        {
+          "id": "V6zn9ZMZpUY",
+          "title": "Nissan Micra K11 Auto-Test  Auto-Magazyn",
+          "duration": 387
+        },
+        {
+          "id": "qu6BvACLbGM",
+          "title": "Mazda MX-3  Auto - Test  Auto - Magazyn   mklstardust",
+          "duration": 318
+        },
+        {
+          "id": "8tt42oRBhVo",
+          "title": "Crash-Test CORSA, CINQUECENTO, TWINGO, MICRA, CUORE. Auto - Magazyn PL mklstardust",
+          "duration": 410
+        },
+        {
+          "id": "GtCG0KybP0s",
+          "title": "Citroen XM Turbo Diesel  Auto Test PL",
+          "duration": 380
+        },
+        {
+          "id": "vk4h3wLsMXo",
+          "title": "SAAB 900 turbo Auto Test",
+          "duration": 429
+        },
+        {
+          "id": "00uJrR-2dNY",
+          "title": "Suzuki Vitara 1.6  Pink Auto-Test Auto - Magazyn PL mklstardust",
+          "duration": 561
+        },
+        {
+          "id": "EjM8ZAeWzfo",
+          "title": "Audi A4 B5 Avant 1.9TDI  AUTO TEST",
+          "duration": 537
+        },
+        {
+          "id": "RwcPe6uCspE",
+          "title": "Citroen Zx Furio 3d Auto-Test Auto-Magazyn PL",
+          "duration": 424
+        },
+        {
+          "id": "HnALTLCQBfM",
+          "title": "FIAT COUPE 2.0 turbo AUTOTEST 1994/1995",
+          "duration": 506
+        },
+        {
+          "id": "bVtV3uMWnpY",
+          "title": "Auto -Magazyn Tor Testowy dla Aut Ciężarowych lata 90-te mklstardust",
+          "duration": 299
+        },
+        {
+          "id": "fdukmZjwktg",
+          "title": "Fiat Ecobasic - Magazyn Auto",
+          "duration": 321
+        },
+        {
+          "id": "PI9mkCy_lmI",
+          "title": "Testy zimowe amortyzatorów Opel + Monroe AUTO-MAGAZYN PL",
+          "duration": 181
+        },
+        {
+          "id": "RZKYRS5flck",
+          "title": "Audi A6, 2.4 Magazyn Auto TVP2",
+          "duration": 588
+        },
+        {
+          "id": "RZKYRS5flck",
+          "title": "Audi A6, 2.4 Magazyn Auto TVP2",
+          "duration": 588
+        },
+        {
+          "id": "DllLcAbqspw",
+          "title": "Red. Cydejko, ocena Audi A8 D2, Magazyn Auto TVP2",
+          "duration": 31
+        },
+        {
+          "id": "tZOvwifKql0",
+          "title": "BMW 530D E39 Magazyn Auto TVP2 (obcięte 2 pierwsze minuty). Test robiony w 1999 r.",
+          "duration": 358
+        },
+        {
+          "id": "DKN8qVSJRjU",
+          "title": "Red. Cydejko omawia aktywny tempomat ACC w BMW E39, Magazyn Auto TVP2",
+          "duration": 202
+        },
+        {
+          "id": "j9iVPriY4AY",
+          "title": "Peugeot 406 Coupe, Magazyn Auto TVP2",
+          "duration": 538
+        },
+        {
+          "id": "TseFcnfUCWM",
+          "title": "Fiat Marea 1,6 SX 103KM (benzyna)- test magazynu Auto TVP2",
+          "duration": 499
+        },
+        {
+          "id": "3TbqvtAjsjk",
+          "title": "cechy",
+          "duration": 58
+        },
+        {
+          "id": "-HE1U1abspQ",
+          "title": "31 sierpnia 2024",
+          "duration": 42
+        },
+        {
+          "id": "lOrDuGW05ZM",
+          "title": "Trasa na Palmiry, gdzie przeprowadzana była była większość testów Magazynu Auto TVP2 (zob.opis)",
+          "duration": 15
+        },
+        {
+          "id": "_3wGi1R9-aA",
+          "title": "Trasa na Palmiry, gdzie finalizowana była była większość testów Magazynu Auto TVP2 (zob.opis)",
+          "duration": 8
+        },
+        {
+          "id": "CKQuHdbll5Y",
+          "title": "Red. Mikos o weryfikacji samochodu przed kupnem. Magazyn Auto TVP2",
+          "duration": 193
+        },
+        {
+          "id": "qaafJykYZqg",
+          "title": "Fiat Punto Sporting Magazyn Auto TVP2 (obcięta pierwsza minuta)",
+          "duration": 251
+        },
+        {
+          "id": "RZKYRS5flck",
+          "title": "Audi A6, 2.4 Magazyn Auto TVP2",
+          "duration": 588
+        },
+        {
+          "id": "tZOvwifKql0",
+          "title": "BMW 530D E39 Magazyn Auto TVP2 (obcięte 2 pierwsze minuty). Test robiony w 1999 r.",
+          "duration": 358
+        },
+        {
+          "id": "j9iVPriY4AY",
+          "title": "Peugeot 406 Coupe, Magazyn Auto TVP2",
+          "duration": 538
+        },
+        {
+          "id": "DllLcAbqspw",
+          "title": "Red. Cydejko, ocena Audi A8 D2, Magazyn Auto TVP2",
+          "duration": 31
+        },
+        {
+          "id": "_QdvnnTcFhM",
+          "title": "Test Land Rover Discovery, Magazyn Auto TVP2",
+          "duration": 411
+        },
+        {
+          "id": "DKN8qVSJRjU",
+          "title": "Red. Cydejko omawia aktywny tempomat ACC w BMW E39, Magazyn Auto TVP2",
+          "duration": 202
+        },
+        {
+          "id": "8OT5MtZxM9s",
+          "title": "Red.  Cydejko prezentuje w Portugalii Alfę Romeo 156,  Magazyn Auto TVP2",
+          "duration": 406
+        },
+        {
+          "id": "9m_UAan6N0o",
+          "title": "Red. Cydejko omawia działanie ESP, Magazyn Auto TVP2",
+          "duration": 169
+        },
+        {
+          "id": "vnX1sTtpEZs",
+          "title": "Red. Cydejko prezentuje Dodgea Durango, Magazyn Auto TVP2",
+          "duration": 58
+        },
+        {
+          "id": "zKfJ6q_6Tgs",
+          "title": "Red.  Cydejko prezentuje Mercedesa CLK, Magazyn Auto TVP2",
+          "duration": 121
+        },
+        {
+          "id": "cTwa-UzDBzU",
+          "title": "Red. Cydejko omawia działanie ABS, Magazyn Auto TVP2",
+          "duration": 168
+        },
+        {
+          "id": "G402LhGrvQg",
+          "title": "Kultowy \"Magazyn Auto\" - odcinek z dn. 27.02.1999",
+          "duration": 1057
+        },
+        {
+          "id": "5S2BHLMbKfQ",
+          "title": "VV [1993] Gliny TVP",
+          "duration": 692
+        },
+        {
+          "id": "OwCZyqPx-vY",
+          "title": "Szczecin nocny patrol policji 1994 rok cz.1",
+          "duration": 377
+        },
+        {
+          "id": "vk4h3wLsMXo",
+          "title": "SAAB 900 turbo Auto Test",
+          "duration": 429
+        },
+        {
+          "id": "RkJSf6Tv6no",
+          "title": "MERCEDES C 180 W202 Auto -Test AUTO-MAGAZYN PL",
+          "duration": 458
+        },
+        {
+          "id": "iuwYVNMPju8",
+          "title": "Auto Magazyn",
+          "duration": 1304
+        },
+        {
+          "id": "ppKefYF1Euk",
+          "title": "Mercedes E 220 \"Trapez\" Auto - Test Auto - Magazyn PL mklstardust",
+          "duration": 403
+        },
+        {
+          "id": "uuln3Wc_5hQ",
+          "title": "Peugeot 405 1.6 Made In Poland - FSC Lublin Auto-Test Auto-Magazyn mklstardust",
+          "duration": 492
+        },
+        {
+          "id": "GtCG0KybP0s",
+          "title": "Citroen XM Turbo Diesel  Auto Test PL",
+          "duration": 380
+        },
+        {
+          "id": "HnALTLCQBfM",
+          "title": "FIAT COUPE 2.0 turbo AUTOTEST 1994/1995",
+          "duration": 506
+        },
+        {
+          "id": "8mst3JadGlA",
+          "title": "Peugeot 306 Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 467
+        },
+        {
+          "id": "XiGObtCjIvU",
+          "title": "Kultowy \"Magazyn Auto\" - odcinek z dn. 22.02.2000",
+          "duration": 1083
+        },
+        {
+          "id": "68eczjSN3CQ",
+          "title": "Fiat Tempra S.W. 1.9 TD Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 374
+        },
+        {
+          "id": "tZOvwifKql0",
+          "title": "BMW 530D E39 Magazyn Auto TVP2 (obcięte 2 pierwsze minuty). Test robiony w 1999 r.",
+          "duration": 358
+        },
+        {
+          "id": "KmiP-70j1JI",
+          "title": "Magazyn AUTO-BMW 328i e46",
+          "duration": 459
+        },
+        {
+          "id": "-C3ra0AJvzg",
+          "title": "Renault Megane 1.6 16V 107 KM(benzyna) - test magazynu Auto TVP2",
+          "duration": 402
+        },
+        {
+          "id": "OhfUyq1ZVnE",
+          "title": "VW Passat B4 1.8 90KM (benzyna) - test magazynu Auto TVP2",
+          "duration": 397
+        },
+        {
+          "id": "Xuv_gST2Qsw",
+          "title": "Honda Civic 1.6 16V 125KM LS (benzyna)- test magazynu Auto TVP2",
+          "duration": 482
+        },
+        {
+          "id": "68eczjSN3CQ",
+          "title": "Fiat Tempra S.W. 1.9 TD Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 374
+        },
+        {
+          "id": "RkJSf6Tv6no",
+          "title": "MERCEDES C 180 W202 Auto -Test AUTO-MAGAZYN PL",
+          "duration": 458
+        },
+        {
+          "id": "vyyMbw6NgRE",
+          "title": "Czołówka programu Auto Mania z lat 90-tych.",
+          "duration": 43
+        },
+        {
+          "id": "EoTWfKzHdpQ",
+          "title": "Czołówka programu Auto Magazyn z lat 90-tych",
+          "duration": 40
+        },
+        {
+          "id": "uuln3Wc_5hQ",
+          "title": "Peugeot 405 1.6 Made In Poland - FSC Lublin Auto-Test Auto-Magazyn mklstardust",
+          "duration": 492
+        },
+        {
+          "id": "8mst3JadGlA",
+          "title": "Peugeot 306 Auto-Test Auto-Magazyn PL mklstardust",
+          "duration": 467
+        },
+        {
+          "id": "ppKefYF1Euk",
+          "title": "Mercedes E 220 \"Trapez\" Auto - Test Auto - Magazyn PL mklstardust",
+          "duration": 403
         }
       ]
     },
     {
       "number": 2,
-      "name": "MUSIC BOX",
+      "name": "Kryminalne",
       "videos": [
         {
-          "id": "dQw4w9WgXcQ",
-          "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
-          "duration": 214
+          "id": "KstnUrY2am4",
+          "title": "Magazyn Kryminalny 997 Listopad 1987",
+          "duration": 1824
         },
         {
-          "id": "9bZkp7q19f0",
-          "title": "PSY - GANGNAM STYLE(강남스타일) M/V",
-          "duration": 253
+          "id": "LOLCbOdDJ0o",
+          "title": "Magazyn Kryminalny 997 - ??.12.1987  2/2",
+          "duration": 864
         },
         {
-          "id": "kJQP7kiw5Fk",
-          "title": "Luis Fonsi - Despacito ft. Daddy Yankee",
-          "duration": 282
+          "id": "BV_oD2c2UUs",
+          "title": "Magazyn Kryminalny 997 Kwiecień 1988 cz. 1",
+          "duration": 1828
         },
         {
-          "id": "OPf0YbXqDm0",
-          "title": "Mark Ronson - Uptown Funk (Official Video) ft. Bruno Mars",
-          "duration": 271
+          "id": "jEGgeiFotqM",
+          "title": "Magazyn Kryminalny 997 -  ??.05.1988 1/2",
+          "duration": 894
+        },
+        {
+          "id": "wnikmSndezQ",
+          "title": "Magazyn Kryminalny 997 - ??.05.1988 2/2",
+          "duration": 1712
+        },
+        {
+          "id": "osAZr4Ht7KQ",
+          "title": "Magazyn Kryminalny 997 - ??.05.1988 1/2",
+          "duration": 1825
+        },
+        {
+          "id": "ZtUkXM8eZUQ",
+          "title": "Magazyn Kryminalny 997 Grudzień 1988",
+          "duration": 3725
+        },
+        {
+          "id": "tK-KjMscQxI",
+          "title": "Magazyn Kryminalny    997    Styczeń 1989 r   cz 1",
+          "duration": 1828
+        },
+        {
+          "id": "8ADqsX3Cq98",
+          "title": "Magazyn Kryminalny    997    Styczeń 1989 cz 2",
+          "duration": 1848
+        },
+        {
+          "id": "nT9HJHmrRpU",
+          "title": "Magazyn Kryminalny    997    Luty 1989 cz 1",
+          "duration": 1827
+        },
+        {
+          "id": "-SfhLbWqTiE",
+          "title": "Magazyn Kryminalny    997    Luty 1989 cz 2",
+          "duration": 1834
+        },
+        {
+          "id": "-T14ypiXOhk",
+          "title": "Magazyn Kryminalny    997    Luty 1989 cz 3",
+          "duration": 333
+        },
+        {
+          "id": "-6qnuLkvBPE",
+          "title": "Magazyn Kryminalny    997    Kwiecień 1989 cz 1",
+          "duration": 1833
+        },
+        {
+          "id": "d7dceHSmP9k",
+          "title": "Magazyn Kryminalny    997    Kwiecień 1989r  cz 2",
+          "duration": 1831
+        },
+        {
+          "id": "XPknEteAMck",
+          "title": "Magazyn Kryminalny    997    kwiecień 1989 r cz 3",
+          "duration": 734
+        },
+        {
+          "id": "k1W99CURMlI",
+          "title": "Magazyn Kryminalny    997    Maj 1989 cz1",
+          "duration": 1831
+        },
+        {
+          "id": "uGnexqqTaZM",
+          "title": "Magazyn Kryminalny    997    Maj 1989 cz 2",
+          "duration": 1826
+        },
+        {
+          "id": "b6SuHXVHp0U",
+          "title": "Magazyn Kryminalny    997    Czerwiec 1989",
+          "duration": 1830
+        },
+        {
+          "id": "JCLbD7CvtE4",
+          "title": "Magazyn Kryminalny    997    Czerwiec 1989 cz2",
+          "duration": 1838
+        },
+        {
+          "id": "AhUOroOcOO8",
+          "title": "Magazyn Kryminalny 997 Lipiec 1989 cz1",
+          "duration": 1823
+        },
+        {
+          "id": "eyKobEgs4YA",
+          "title": "Magazyn Kryminalny 997 lipiec 1989 cz 2",
+          "duration": 1837
+        },
+        {
+          "id": "fZ190H47zJI",
+          "title": "Magazyn Kryminalny    997    Lipiec 1989 cz 3",
+          "duration": 85
+        },
+        {
+          "id": "FwQ8dswmffw",
+          "title": "Magazyn Kryminalny    997    Październik 1989",
+          "duration": 3622
+        },
+        {
+          "id": "GRLoHUaa8yU",
+          "title": "Magazyn Kryminalny 997 1991 rok   Fragment 6 minut",
+          "duration": 382
+        },
+        {
+          "id": "to263JZrE18",
+          "title": "Program Drugi - Magazyn Kryminalny 997 (27 listopada 1991)",
+          "duration": 2487
+        },
+        {
+          "id": "9wpumAsTIS8",
+          "title": "Magazyn Kryminalny 997. Program Drugi 25.02.1992",
+          "duration": 3176
+        },
+        {
+          "id": "un6mARzn20s",
+          "title": "Fragment Magazynu Kryminalnego 997. Program Drugi. 30.03.1992",
+          "duration": 1780
+        },
+        {
+          "id": "5QU-A479P3o",
+          "title": "TVP2 - Studio, reklamy, Magazyn Kryminalny 997, Panorama, Zakończenie programu (27/28.04.1992)",
+          "duration": 4427
+        },
+        {
+          "id": "GYG65zwMcAM",
+          "title": "MK 997 - 26.10.1992r. (fragment)",
+          "duration": 463
+        },
+        {
+          "id": "BLuqeQszOOQ",
+          "title": "Magazyn Kryminalny 997. Program Drugi 30.11.1992",
+          "duration": 2404
+        },
+        {
+          "id": "nIM-8gRN6Jw",
+          "title": "Magazyn Kryminalny 997 - 28.12.1992",
+          "duration": 2918
         }
       ]
     },
@@ -311,7 +786,7 @@
     },
     {
       "number": 4,
-      "name": "Motoryzacja",
+      "name": "Motoryzacja - reklamy",
       "videos": [
         {
           "id": "f5Lvq-wbjsc",
@@ -527,7 +1002,7 @@
     },
     {
       "number": 5,
-      "name": "Drogi i miasta",
+      "name": "Kamerą w przeszłość",
       "videos": [
         {
           "id": "kU7qy3hYRXM",
@@ -808,6 +1283,26 @@
           "id": "-yi-uh24pcM",
           "title": "Wieś Biały Dunajec w czasie II wojny Światowej na archiwalnym filmie / Historia Polski",
           "duration": 390
+        },
+        {
+          "id": "ZR0PgKftrI4",
+          "title": "Przejazd z Gościcina do Wejherowa, r. 1988",
+          "duration": 220
+        },
+        {
+          "id": "DC1YpnYlsFQ",
+          "title": "WARSZAWA 88 89 CZ3",
+          "duration": 532
+        },
+        {
+          "id": "yMDmzPrX_vk",
+          "title": "Przejazd DK 6 na odc. Charwatynia-Gościcino, r. 1988",
+          "duration": 258
+        },
+        {
+          "id": "xatjs3N5SFE",
+          "title": "Wiosna 1988 w Śródmieściu",
+          "duration": 300
         }
       ]
     }
