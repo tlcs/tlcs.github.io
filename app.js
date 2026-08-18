@@ -9,6 +9,9 @@ import { TVPlayer, PlayerState } from './player.js';
 
 const DRIFT_TOLERANCE_S = 6;
 const DRIFT_CHECK_MS = 15000;
+// Longest thing we'll treat as an ad. Nothing scheduled is this short, so a
+// player duration at or under this on a longer programme means an ad is on.
+const MAX_AD_S = 180;
 const STATIC_MIN_MS = 500;
 const LED_FLASH_MS = 2000;
 const DIGIT_ENTRY_MS = 1500;
@@ -34,6 +37,7 @@ let ledTimer = null;
 let digitTimer = null;
 let staticShownAt = 0;
 let audioCtx = null;
+let adOnScreen = false;
 
 // ---- Elements --------------------------------------------------------------
 
@@ -187,12 +191,38 @@ async function onBoundary() {
   if (state.guideOpen) renderGuide();
 }
 
+// The IFrame API exposes no "ad is showing" event, so infer it: during an ad
+// break every getter describes the ad, and getDuration() reports its length.
+// Nothing we schedule is under MAX_AD_S, so a short duration on a long
+// programme means an ad owns the video surface. Deliberately independent of the
+// *exact* lineup duration — those are only approximate until the fetch script
+// regenerates them, and a stale value must not be mistaken for an ad forever.
+function adPlaying(prog) {
+  // Under this length an ad and a programme are indistinguishable; don't guess.
+  if (prog.video.duration <= MAX_AD_S) return false;
+  const d = player.getDuration();
+  const isAd = d > 0 && d <= MAX_AD_S;
+  if (isAd !== adOnScreen) {
+    adOnScreen = isAd;
+    console.debug(
+      `[retrotv] ad ${isAd ? 'started' : 'ended'} (player duration ${d.toFixed(1)}s vs ` +
+        `programme ${prog.video.duration}s) — schedule enforcement ${isAd ? 'paused' : 'resumed'}`
+    );
+  }
+  return isAd;
+}
+
 function resyncIfDrifted() {
   if (!state.powered) return;
   const ch = currentChannel();
   if (!ch) return;
   const prog = currentProgramme(ch, Date.now());
   if (!prog) return;
+  // An ad is on: its clock isn't the programme's, so the drift below would be
+  // nonsense and every correction wrong. Seeking or reloading now is also what
+  // stops the ad rendering — audible but invisible. Leave the player alone; the
+  // first tick after the break catches up to live.
+  if (adPlaying(prog)) return;
   if (prog.video.id !== player.currentVideoId) {
     tuneToLive();
     return;
@@ -213,6 +243,9 @@ function handlePlayerState(playerState) {
     // timer retunes (or retune now if the schedule already moved on).
     const ch = currentChannel();
     const prog = ch && currentProgramme(ch, Date.now());
+    // An ad ending is not the programme ending: painting static here would
+    // cover the picture with noise mid-break.
+    if (prog && adPlaying(prog)) return;
     if (prog && prog.video.id !== player.currentVideoId) tuneToLive();
     else staticFx.show();
   }
@@ -393,6 +426,7 @@ function powerOff() {
   clearTimeout(digitTimer);
   state.digitBuffer = '';
   state.guideOpen = false;
+  adOnScreen = false;
   el.guide.classList.remove('open');
   staticFx.hide();
   player.stop();
@@ -461,4 +495,11 @@ applyCinema();
 loadLineup().catch((e) => console.warn('Lineup prefetch failed', e));
 
 // Debug/verification handle (harmless to ship; nothing secret in here).
-window.retrotv = { state, player, currentProgramme, currentChannel, toggleCinema };
+window.retrotv = {
+  state,
+  player,
+  currentProgramme,
+  currentChannel,
+  toggleCinema,
+  isAdPlaying: () => adOnScreen,
+};

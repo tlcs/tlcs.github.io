@@ -190,8 +190,15 @@ sure the old key is revoked.
 
 ## Known limitations
 
-- YouTube may insert ads for some viewers; the drift check re-syncs right after, so
-  visitors stay within a few seconds to a minute of each other.
+- YouTube may insert ads for viewers without Premium. While one is on, the player's clock
+  describes the *ad*, not the programme — so the app detects the break and suspends schedule
+  enforcement for its duration, then catches up to live on the first check afterwards.
+  Visitors still stay within a few seconds to a minute of each other. Without that guard the
+  drift check "corrects" against the ad's clock and seeks continuously, which leaves the ad
+  audible but not visible.
+- Ad detection is a heuristic — the IFrame API exposes no ad event, so a player duration of
+  three minutes or less on a longer programme is read as an ad. Consequently an unusually long
+  ad, or a scheduled video under three minutes, falls back to the unguarded behaviour.
 - The YouTube watermark and some hover UI can't be removed via the official IFrame API,
   and this project deliberately doesn't hack around it.
 - Clicking the picture pauses it (the API allows that); on resume the TV jumps forward

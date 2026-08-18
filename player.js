@@ -87,6 +87,12 @@ export class TVPlayer {
     return this.player?.getCurrentTime?.() ?? 0;
   }
 
+  // Reports whatever is on the video surface right now — during an ad break
+  // that is the ad's length, not the scheduled programme's.
+  getDuration() {
+    return this.player?.getDuration?.() ?? 0;
+  }
+
   getState() {
     return this.player?.getPlayerState?.() ?? -1;
   }
