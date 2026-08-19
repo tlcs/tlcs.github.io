@@ -79,6 +79,10 @@ export class TVPlayer {
     this.player?.playVideo();
   }
 
+  pause() {
+    this.player?.pauseVideo();
+  }
+
   seekTo(seconds) {
     this.player?.seekTo(seconds, true);
   }

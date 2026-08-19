@@ -1,0 +1,2 @@
+- [ ] check why tv sometimes unpauses itself
+- [ ] git sta

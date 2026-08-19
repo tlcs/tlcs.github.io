@@ -276,8 +276,16 @@ body {
   white-space: pre;
 }
 
-/* wraps onto a second line on a narrow cabinet instead of running off the edge */
-.panel-buttons { display: flex; flex-wrap: wrap; gap: 7px; min-width: 0; }
+/* Two rows of three. Each column is a pair (CH, VOL, GUIDE/CINEMA), which costs
+   half the width the single row did — that reclaimed width becomes the tape slot. */
+.panel-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 4px 5px;
+  min-width: 0;
+  flex: none;
+}
+.panel-buttons .tv-btn { padding: 4px 6px; font-size: 8px; }
 
 .tv-btn {
   background: linear-gradient(180deg, #47474c, #26262a 60%, #1a1a1d);
@@ -297,24 +305,82 @@ body {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.speaker {
-  /* zero basis: soaks up slack when there is any, collapses silently when there
-     isn't — so it never pushes the controls onto a second row */
+/* ---- Tape slot (the deck face) --------------------------------------------
+   Takes all the width the controls don't, so it is as close to cassette scale
+   as the cabinet allows; carries the brand the way a real TV/VCR combi did. */
+
+.vhs-slot {
   flex: 1 1 0;
-  align-self: stretch;
-  min-width: 0;
-  border-radius: 4px;
-  background: repeating-linear-gradient(
-    to bottom,
-    #26262a 0px, #26262a 2px,
-    #121215 2px, #121215 5px
-  );
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+  min-width: 96px;
+  /* takes the width the controls leave, but stops at roughly cassette scale —
+     a slot wider than the tape it swallows stops reading as a slot */
+  max-width: 420px;
+  height: 30px;
+  border: 1px solid #101014;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #0d0d10 0%, #000 45%, #0a0a0d 100%);
+  box-shadow:
+    inset 0 4px 7px rgba(0, 0, 0, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.09),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+/* the mouth the cassette goes into */
+.vhs-slot::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+}
+.vhs-slot:active { transform: translateY(1px); }
+
+.slot-brand {
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  color: #b9b9c2;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+.slot-vhs {
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  font-size: 9px;
+  color: #9a9aa4;
+  position: relative;
+  z-index: 1;
 }
 
-.power-cluster { display: flex; align-items: center; gap: 9px; }
-.cinema-cluster { display: flex; align-items: center; gap: 6px; }
+/* a loaded tape shows its edge sticking out of the mouth */
+.slot-tape {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 50%;
+  height: 0;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #3a3a40, #16161a);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.8);
+  transition: height 0.25s ease, transform 0.25s ease;
+  transform: translateY(0);
+}
+.vhs-slot.loaded .slot-tape { height: 7px; transform: translateY(-3px); }
 
+/* auto margin keeps power on the right edge when the capped slot leaves slack */
+.power-cluster { display: flex; align-items: center; gap: 9px; margin-left: auto; }
 .indicator-light {
   width: 7px;
   height: 7px;
@@ -327,13 +393,12 @@ body {
   box-shadow: 0 0 7px rgba(255, 59, 48, 0.9);
 }
 
-.cinema-light { background: #3a2c10; }
-.cinema-light.on {
-  background: #ffb020;
-  box-shadow: 0 0 7px rgba(255, 176, 32, 0.9);
+/* cinema has no lamp — the button lighting up amber is the whole indication */
+.tv-btn.active {
+  color: #ffd48a;
+  border-color: #6a5220;
+  background: linear-gradient(180deg, #5a4a2c, #33261a 60%, #241a10);
 }
-
-.tv-btn.active { color: #ffd48a; border-color: #6a5220; }
 
 /* Power symbol drawn as SVG rather than the U+23FB glyph: that codepoint lives
    in Noto Sans Symbols 2, which plenty of Android builds don't ship, so Chrome
@@ -363,6 +428,123 @@ body {
   background: linear-gradient(180deg, #1b1b1e, #0c0c0e);
   border-radius: 0 0 6px 6px;
   transform: translateY(12px);
+}
+
+/* ---- Rental shelf ----------------------------------------------------------
+   Real furniture in the room rather than an on-screen menu: sleeves standing
+   face-out on a lit board, the way a rental shop displayed its stock.        */
+
+.shelf {
+  width: min(92vw, 880px);
+  max-height: 42vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px 20px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #241b12 0%, #180f08 100%);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.75),
+    inset 0 -6px 0 #2e2318,
+    0 18px 40px rgba(0, 0, 0, 0.75);
+  scrollbar-width: thin;
+  scrollbar-color: #4a3a26 transparent;
+}
+.shelf[hidden] { display: none; }
+.shelf::-webkit-scrollbar { width: 7px; }
+.shelf::-webkit-scrollbar-thumb { background: #4a3a26; border-radius: 4px; }
+.shelf::-webkit-scrollbar-track { background: transparent; }
+
+.shelf-genre {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b08a4e;
+  border-bottom: 1px solid rgba(176, 138, 78, 0.28);
+  padding-bottom: 5px;
+}
+
+.shelf-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.shelf-empty {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #8a7355;
+  padding: 6px 2px;
+}
+
+/* ---- VHS sleeve ---- */
+
+.sleeve {
+  width: 92px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px 3px 3px 2px;
+  overflow: hidden;
+  background: #17171b;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.7),
+    inset 1px 0 0 rgba(255, 255, 255, 0.10),
+    inset -1px 0 0 rgba(0, 0, 0, 0.6);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+/* the sleeve's spine catching the shelf light */
+.sleeve::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  z-index: 2;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+}
+.sleeve:hover, .sleeve:focus-visible { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0, 0, 0, 0.8); }
+.sleeve.loaded { outline: 2px solid var(--led-green); outline-offset: 2px; }
+
+.sleeve-art { height: 74px; background: #0c0c10; overflow: hidden; }
+.sleeve-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.sleeve-label {
+  background: linear-gradient(180deg, #ecead9, #d8d5c0);
+  color: #1a1a18;
+  font-family: "Courier New", monospace;
+  font-size: 8px;
+  line-height: 1.3;
+  font-weight: 700;
+  padding: 5px 6px 6px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sleeve-meta {
+  font-size: 6px;
+  letter-spacing: 0.14em;
+  color: #6a6a5e;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.sleeve-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* left un-rewound, the way you'd get it back from the shop */
+.sleeve-rewind {
+  font-size: 5.5px;
+  letter-spacing: 0.12em;
+  color: #a33;
+  border: 1px solid #a33;
+  border-radius: 1px;
+  padding: 1px 2px;
+  align-self: flex-start;
+  margin-top: auto;
 }
 
 /* ---- Remote control -------------------------------------------------------- */
@@ -468,14 +650,10 @@ body {
 @media (max-width: 700px) {
   .setup { align-items: center; }
   .remote { flex-direction: row; width: auto; margin-bottom: 0; padding: 10px 14px; }
-  /* laid on its side, the IR window would sit alongside the power button and read
-     as a stray dash — stack it underneath instead (column-reverse: power on top) */
-  .remote-top {
-    width: auto;
-    flex-direction: column-reverse;
-    justify-content: center;
-    gap: 7px;
-  }
+  .remote-top { width: auto; }
+  /* laid on its side the IR window reads as a stray dash next to the power
+     button, so it sits this layout out */
+  .remote-ir { display: none; }
   .front-panel { flex-wrap: wrap; }
   .feet { display: none; }
 }
@@ -493,7 +671,7 @@ body.cinema {
   --cab-pad-top: 10px;
   --cab-pad-bottom: 6px;
   --bezel-pad: 7px;
-  --chrome-v: 84px;        /* measured: exact fit is ~68px, this keeps a safety margin */
+  --chrome-v: 92px;        /* the deck panel is taller than the old button row */
   --tv-w-cap: 100vw;
   --side-reserve: 16px;    /* remote is hidden at this width — just room padding */
   overflow: hidden;        /* deterministic: no scrollbars in cinema */
@@ -503,9 +681,11 @@ body.cinema .room { height: 100dvh; padding: 8px; gap: 6px; }
 body.cinema .setup { gap: 16px; }
 body.cinema .feet { display: none; }
 body.cinema .front-panel { gap: 10px; margin-top: 6px; padding: 3px 4px 2px; }
-body.cinema .model { display: none; }
-body.cinema .brand { font-size: 13px; }
-body.cinema .badge { min-width: 0; }
+/* cinema exists to give the picture room — a shelf of tapes beside it defeats
+   the point, so the library sits this mode out too */
+body.cinema .shelf { display: none; }
+body.cinema .vhs-slot { height: 24px; }
+body.cinema .slot-brand { font-size: 10px; }
 body.cinema .led-window { height: 26px; min-width: 68px; }
 body.cinema .led { font-size: 16px; }
 body.cinema .tv-btn { padding: 5px 7px; }

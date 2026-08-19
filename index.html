@@ -23,24 +23,27 @@
         </div>
 
         <div class="front-panel">
-          <div class="badge">
-            <span class="brand">TELSTAR</span>
-            <span class="model">CX-2140 STEREO</span>
-          </div>
           <button type="button" class="led-window" data-action="channels" title="Channel list"
                   aria-label="Channel list"><span id="led" class="led"></span></button>
+          <!-- 2x3 block: each column is a pair, which frees the width the tape slot needs -->
           <div class="panel-buttons">
-            <button class="tv-btn" data-action="ch-down" title="Channel down">CH &minus;</button>
-            <button class="tv-btn" data-action="ch-up" title="Channel up">CH +</button>
+            <button class="tv-btn" data-action="ch-down" title="Channel down"
+                    data-label-tv="CH &minus;" data-label-tape="&#9664;&#9664;">CH &minus;</button>
             <button class="tv-btn" data-action="vol-down" title="Volume down">VOL &minus;</button>
+            <button class="tv-btn" data-action="guide" title="Programme guide"
+                    data-label-tv="GUIDE" data-label-tape="&#9654;&#10073;&#10073;">GUIDE</button>
+            <button class="tv-btn" data-action="ch-up" title="Channel up"
+                    data-label-tv="CH +" data-label-tape="&#9654;&#9654;">CH +</button>
             <button class="tv-btn" data-action="vol-up" title="Volume up">VOL +</button>
-            <button class="tv-btn" data-action="guide" title="Programme guide">GUIDE</button>
-            <div class="cinema-cluster">
-              <span id="cinema-light" class="indicator-light cinema-light" aria-hidden="true"></span>
-              <button class="tv-btn" data-action="cinema" title="Cinema mode (C)" aria-pressed="false">CINEMA</button>
-            </div>
+            <button class="tv-btn" data-action="cinema" title="Cinema mode (C)" aria-pressed="false">CINEMA</button>
           </div>
-          <div class="speaker" aria-hidden="true"></div>
+          <!-- the deck face: carries the brand the way a real combi unit did -->
+          <button type="button" id="vhs-slot" class="vhs-slot" data-action="vhs"
+                  title="Video library" aria-label="Video library">
+            <span class="slot-brand">TELSTAR</span>
+            <span class="slot-tape" aria-hidden="true"></span>
+            <span class="slot-vhs">VHS</span>
+          </button>
           <div class="power-cluster">
             <span id="power-light" class="power-light"></span>
             <button class="tv-btn power" data-action="power" title="Power" aria-label="Power">
@@ -93,7 +96,8 @@
       </div>
 
     </div>
-    <p class="hint">P power &nbsp; &uarr;&darr; channel &nbsp; &larr;&rarr; volume &nbsp; 0&ndash;9 direct &nbsp; M mute &nbsp; G guide &nbsp; C cinema</p>
+    <div id="shelf" class="shelf" hidden aria-label="Video library"></div>
+    <p class="hint">P power &nbsp; &uarr;&darr; channel &nbsp; &larr;&rarr; volume &nbsp; 0&ndash;9 direct &nbsp; M mute &nbsp; G guide &nbsp; C cinema &nbsp; V video</p>
   </main>
   <script type="module" src="app.js"></script>
 </body>

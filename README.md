@@ -112,6 +112,46 @@ fullscreen via `Esc` or F11, since the browser consumes those keys itself.
 On load the picture size is restored but fullscreen is not — browsers only grant it in response
 to a real click or keypress, never on page load.
 
+## VHS mode
+
+The cabinet has a tape slot on its front panel. Press it and the **rental shelf** rises in the
+room below the set — sleeves standing face-out, grouped by genre. Pick one and it plays.
+
+A tape is not broadcast, and the set knows the difference:
+
+- **Schedule enforcement stops.** No drift correction, no programme boundaries, no channel
+  changes — the aerial is effectively unplugged until the tape comes out.
+- **You can pause.** That's the whole point of owning the tape rather than catching the airing.
+- **The LED becomes a tape counter**, `H:MM`, the way every VCR's display did.
+- **The buttons become the transport.** `CH −/+` rewind and forward 30s, `GUIDE` is play/pause.
+  They relabel themselves to `◀◀ ▶▶ ▶❙❙` while a tape is in, and change back on eject.
+- **Press the slot again to eject**, which returns to live TV, caught up to wherever the
+  schedule has got to in the meantime.
+
+Tapes **hold their position** like real ones — eject halfway through and it resumes there next
+visit, kept in `localStorage` per tape. Stop past the halfway mark and the sleeve says
+**BE KIND, REWIND** until you watch it out. Keyboard: `V` for the library.
+
+Cinema mode hides the shelf: that mode exists to give the picture room, and a shelf beside it
+defeats the point.
+
+### Curating tapes
+
+Edit [vhs.config.json](vhs.config.json) — one entry per tape, `id` plus a `genre`, with optional
+`title` and `cover` overrides. Then:
+
+```bash
+YT_API_KEY=$(cat .keys) node tools/fetch-vhs.mjs
+```
+
+That writes `vhs.json` with titles and runtimes. Sleeve art is the video's own thumbnail unless
+you supply a `cover` URL.
+
+**The script refuses tapes the tube cannot play.** A video whose uploader disabled embedding
+shows "Video unavailable" in the player, so it is dropped with a note saying which and why —
+better an honest gap in the shelf than a sleeve that plays nothing. If a film you want is
+rejected, look for another upload of it.
+
 ## Curating channels
 
 1. Edit [channels.config.json](channels.config.json) — per channel either a YouTube

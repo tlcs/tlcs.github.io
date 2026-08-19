@@ -12,6 +12,9 @@ const DRIFT_CHECK_MS = 15000;
 // Longest thing we'll treat as an ad. Nothing scheduled is this short, so a
 // player duration at or under this on a longer programme means an ad is on.
 const MAX_AD_S = 180;
+const TAPE_SKIP_S = 30;      // one press of REW / FF
+const TAPE_TICK_MS = 1000;   // counter tick, and how often a tape saves its place
+const TAPE_REWIND_NAG = 0.5; // stopped past halfway => the sleeve asks to be rewound
 const STATIC_MIN_MS = 333;
 const LED_FLASH_MS = 2000;
 const DIGIT_ENTRY_MS = 1500;
@@ -29,6 +32,10 @@ const state = {
   guideOpen: false,
   channelsOpen: false,
   cinema: false,
+  tapes: [],          // the VHS catalogue
+  shelfOpen: false,
+  tapeId: null,       // non-null => a tape is in, broadcast is suspended
+  tapePlaying: false,
   digitBuffer: '',
 };
 
@@ -39,6 +46,8 @@ let digitTimer = null;
 let staticShownAt = 0;
 let audioCtx = null;
 let adOnScreen = false;
+let ledFlashUntil = 0;
+let tapeTimer = null;
 
 // ---- Elements --------------------------------------------------------------
 
@@ -48,9 +57,10 @@ const el = {
   staticCanvas: document.getElementById('static-canvas'),
   guide: document.getElementById('guide'),
   channels: document.getElementById('channels'),
+  shelf: document.getElementById('shelf'),
+  slot: document.getElementById('vhs-slot'),
   screenOff: document.getElementById('screen-off'),
   powerLight: document.getElementById('power-light'),
-  cinemaLight: document.getElementById('cinema-light'),
 };
 
 const cinemaBtns = document.querySelectorAll('[data-action="cinema"]');
@@ -87,17 +97,27 @@ function currentChannel() {
 // ---- LED display -----------------------------------------------------------
 
 function ledPersistent() {
-  return state.powered ? String(currentChannel()?.number ?? '--') : '';
+  if (!state.powered) return '';
+  if (state.tapeId) return tapeCounter(); // a deck shows the counter, not a channel
+  return String(currentChannel()?.number ?? '--');
 }
 
 function showLed(text, flashMs) {
   clearTimeout(ledTimer);
   el.led.textContent = text;
+  ledFlashUntil = flashMs ? performance.now() + flashMs : 0;
   if (flashMs) {
     ledTimer = setTimeout(() => {
+      ledFlashUntil = 0;
       el.led.textContent = ledPersistent();
     }, flashMs);
   }
+}
+
+// The tape counter ticks every second and must not stomp on a flash in progress,
+// so it writes the display directly rather than going through showLed().
+function refreshLed() {
+  if (performance.now() >= ledFlashUntil) el.led.textContent = ledPersistent();
 }
 
 // ---- Static noise (canvas + WebAudio hiss) ---------------------------------
@@ -176,6 +196,7 @@ function tuneToLive() {
 
 async function onBoundary() {
   if (!state.powered) return;
+  if (state.tapeId) return; // don't retune the tube out from under a tape
   // Crossing UTC midnight may activate a different dated lineup.
   if (utcMidnight(Date.now()) !== state.lineupDay) {
     const keepNumber = currentChannel()?.number;
@@ -216,6 +237,7 @@ function adPlaying(prog) {
 
 function resyncIfDrifted() {
   if (!state.powered) return;
+  if (state.tapeId) return; // a tape is in — the broadcast clock doesn't apply
   const ch = currentChannel();
   if (!ch) return;
   const prog = currentProgramme(ch, Date.now());
@@ -239,8 +261,20 @@ function handlePlayerState(playerState) {
   if (!state.powered) return;
   if (playerState === PlayerState.PLAYING) {
     hideStaticWhenPlaying();
+    if (state.tapeId) {
+      state.tapePlaying = true;
+      refreshLed();
+      return; // no catch-up: a tape plays at its own pace
+    }
     resyncIfDrifted(); // catch-up after a pause: jump to the live position
+  } else if (playerState === PlayerState.PAUSED && state.tapeId) {
+    state.tapePlaying = false;
+    saveTapePosition(state.tapeId, player.getCurrentTime());
   } else if (playerState === PlayerState.ENDED) {
+    if (state.tapeId) {
+      ejectTape({ rewound: true }); // ran to the end, so it's back at the start
+      return;
+    }
     // Claimed duration was a little long — hold static until the boundary
     // timer retunes (or retune now if the schedule already moved on).
     const ch = currentChannel();
@@ -255,6 +289,15 @@ function handlePlayerState(playerState) {
 
 function handlePlayerError(code) {
   console.warn('YouTube player error', code);
+  // 101/150 = embedding disallowed, which is also what an age-restricted video
+  // reports. A tape that can't play would strand the set on static, so spit it
+  // back out and return to broadcast rather than sit there.
+  if (state.tapeId) {
+    console.warn(`Tape ${state.tapeId} refused to play (code ${code}) — ejecting.`);
+    showLed('ERR', LED_FLASH_MS);
+    ejectTape({ rewound: true });
+    return;
+  }
   // Deleted / embed-blocked video: no signal until the next programme starts.
   staticFx.show();
   showLed('--', LED_FLASH_MS);
@@ -264,6 +307,7 @@ function handlePlayerError(code) {
 
 function setChannel(index, { withStatic = true } = {}) {
   if (!state.powered || state.channels.length === 0) return;
+  if (state.tapeId) return; // the aerial is disconnected while a tape is in
   const n = state.channels.length;
   state.chIndex = ((index % n) + n) % n;
   localStorage.setItem('retrotv.channel', String(currentChannel().number));
@@ -396,11 +440,189 @@ function toggleChannels() {
   setChannelsOpen(next);
 }
 
+// ---- VHS: the tape deck -----------------------------------------------------
+// A tape suspends the broadcast entirely. The schedule keeps running in the
+// world's clock, but this set has stopped watching it until the tape comes out.
+
+async function loadCatalogue() {
+  const resp = await fetch('vhs.json', { cache: 'no-store' });
+  if (!resp.ok) throw new Error('Failed to load vhs.json');
+  const data = await resp.json();
+  state.tapes = (data.tapes || []).filter((t) => t && t.id);
+}
+
+function tapeById(id) {
+  return state.tapes.find((t) => t.id === id) ?? null;
+}
+
+// Tapes hold their position the way real ones did — nothing rewinds on eject.
+function tapePosition(id) {
+  return Number(localStorage.getItem(`retrotv.tape.${id}`)) || 0;
+}
+
+function saveTapePosition(id, seconds) {
+  localStorage.setItem(`retrotv.tape.${id}`, String(Math.max(0, Math.floor(seconds))));
+}
+
+// Four characters, like every other thing this display shows.
+function tapeCounter() {
+  const s = Math.max(0, Math.floor(player.getCurrentTime()));
+  return `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}`;
+}
+
+function renderShelf() {
+  if (state.tapes.length === 0) {
+    el.shelf.innerHTML = '<p class="shelf-empty">NO TAPES IN THE CATALOGUE</p>';
+    return;
+  }
+  const genres = [...new Set(state.tapes.map((t) => t.genre || 'Inne'))];
+  el.shelf.innerHTML = genres
+    .map((genre) => {
+      const sleeves = state.tapes
+        .filter((t) => (t.genre || 'Inne') === genre)
+        .map(sleeveHtml)
+        .join('');
+      return `<div class="shelf-genre">${escapeHtml(genre)}</div>
+        <div class="shelf-row">${sleeves}</div>`;
+    })
+    .join('');
+}
+
+function sleeveHtml(tape) {
+  const pos = tapePosition(tape.id);
+  const unrewound = tape.duration > 0 && pos > tape.duration * TAPE_REWIND_NAG;
+  const art = tape.cover || `https://i.ytimg.com/vi/${tape.id}/hqdefault.jpg`;
+  const mins = Math.round((tape.duration || 0) / 60);
+  return `<button type="button" class="sleeve${tape.id === state.tapeId ? ' loaded' : ''}"
+      data-tape="${escapeHtml(tape.id)}" title="${escapeHtml(tape.title || tape.id)}">
+    <span class="sleeve-art"><img src="${escapeHtml(art)}" alt="" loading="lazy"></span>
+    <span class="sleeve-label">
+      <span class="sleeve-meta">${escapeHtml(tape.genre || 'Inne')} &middot; ${mins} MIN</span>
+      <span class="sleeve-title">${escapeHtml(tape.title || tape.id)}</span>
+      ${unrewound ? '<span class="sleeve-rewind">BE KIND, REWIND</span>' : ''}
+    </span>
+  </button>`;
+}
+
+function setShelfOpen(open) {
+  state.shelfOpen = open;
+  el.shelf.hidden = !open;
+  if (!open) return;
+  renderShelf();
+  // the shelf sits under the set, which can put it below the fold — look down at
+  // it, the way you would in the shop
+  const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.shelf.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'end' });
+}
+
+// The slot is the whole interface: press it for the library, press it again to
+// eject whatever is in it.
+function slotPressed() {
+  if (!state.powered) return;
+  if (state.tapeId) {
+    ejectTape();
+    return;
+  }
+  if (state.shelfOpen) {
+    setShelfOpen(false);
+    return;
+  }
+  const show = () => setShelfOpen(true);
+  if (state.tapes.length === 0) loadCatalogue().then(show).catch((e) => {
+    console.warn('Catalogue load failed', e);
+    show();
+  });
+  else show();
+}
+
+function insertTape(id) {
+  const tape = tapeById(id);
+  if (!tape || !state.powered) return;
+  // hand the tube to the deck: the broadcast clock stops applying
+  clearTimeout(boundaryTimer);
+  clearInterval(driftTimer);
+  driftTimer = null;
+  state.tapeId = id;
+  state.tapePlaying = true;
+  setShelfOpen(false);
+  if (state.guideOpen) setGuideOpen(false);
+  if (state.channelsOpen) setChannelsOpen(false);
+  el.slot.classList.add('loaded');
+  applyTransportLabels();
+  staticFx.show();
+  playHiss(300);
+  player.tune(id, tapePosition(id));
+  startTapeTimer();
+  showLed('PLAY', LED_FLASH_MS);
+}
+
+function ejectTape({ rewound = false } = {}) {
+  if (!state.tapeId) return;
+  saveTapePosition(state.tapeId, rewound ? 0 : player.getCurrentTime());
+  state.tapeId = null;
+  state.tapePlaying = false;
+  stopTapeTimer();
+  el.slot.classList.remove('loaded');
+  applyTransportLabels();
+  if (state.shelfOpen) renderShelf(); // drop the "loaded" ring, add any rewind nag
+  showLed('EJECT', LED_FLASH_MS);
+  staticFx.show();
+  playHiss(300);
+  // back to live television, caught up to wherever the schedule has got to
+  tuneToLive();
+  driftTimer = setInterval(resyncIfDrifted, DRIFT_CHECK_MS);
+}
+
+function tapePlayPause() {
+  if (!state.tapeId) return;
+  state.tapePlaying = !state.tapePlaying;
+  if (state.tapePlaying) player.play();
+  else player.pause();
+  showLed(state.tapePlaying ? 'PLAY' : 'STIL', LED_FLASH_MS);
+}
+
+function tapeSkip(direction) {
+  if (!state.tapeId) return;
+  const to = Math.max(0, player.getCurrentTime() + direction * TAPE_SKIP_S);
+  player.seekTo(to);
+  saveTapePosition(state.tapeId, to);
+  showLed(direction < 0 ? 'REW' : 'FF', LED_FLASH_MS);
+}
+
+function startTapeTimer() {
+  stopTapeTimer();
+  tapeTimer = setInterval(() => {
+    if (!state.tapeId) return;
+    saveTapePosition(state.tapeId, player.getCurrentTime());
+    refreshLed();
+  }, TAPE_TICK_MS);
+}
+
+function stopTapeTimer() {
+  clearInterval(tapeTimer);
+  tapeTimer = null;
+}
+
+// The same buttons, relabelled — CH becomes the transport, GUIDE becomes play.
+function applyTransportLabels() {
+  const tape = !!state.tapeId;
+  document.querySelectorAll('[data-label-tv]').forEach((b) => {
+    b.textContent = tape ? b.dataset.labelTape : b.dataset.labelTv;
+  });
+  el.slot.title = tape ? 'Eject tape' : 'Video library';
+  el.slot.setAttribute('aria-label', tape ? 'Eject tape' : 'Video library');
+}
+
+// Shared by the panel buttons and the keyboard: what a control means depends on
+// whether a tape is in.
+function channelUpOrFwd() { state.tapeId ? tapeSkip(1) : channelStep(1); }
+function channelDownOrRew() { state.tapeId ? tapeSkip(-1) : channelStep(-1); }
+function guideOrPlayPause() { state.tapeId ? tapePlayPause() : toggleGuide(); }
+
 // ---- Cinema mode (picture size + native fullscreen) -------------------------
 
 function applyCinema() {
   document.body.classList.toggle('cinema', state.cinema);
-  el.cinemaLight.classList.toggle('on', state.cinema);
   cinemaBtns.forEach((b) => {
     b.setAttribute('aria-pressed', String(state.cinema));
     b.classList.toggle('active', state.cinema);
@@ -475,6 +697,14 @@ function powerOff() {
   adOnScreen = false;
   el.guide.classList.remove('open');
   el.channels.classList.remove('open');
+  // the deck powers down with the set, keeping its place on the tape
+  if (state.tapeId) saveTapePosition(state.tapeId, player.getCurrentTime());
+  state.tapeId = null;
+  state.tapePlaying = false;
+  stopTapeTimer();
+  el.slot.classList.remove('loaded');
+  applyTransportLabels();
+  setShelfOpen(false);
   staticFx.hide();
   player.stop();
   el.tv.classList.remove('on');
@@ -495,13 +725,14 @@ function bindButtons() {
       const { action, value } = btn.dataset;
       switch (action) {
         case 'power': togglePower(); break;
-        case 'ch-up': channelStep(1); break;
-        case 'ch-down': channelStep(-1); break;
+        case 'ch-up': channelUpOrFwd(); break;
+        case 'ch-down': channelDownOrRew(); break;
         case 'vol-up': volumeStep(1); break;
         case 'vol-down': volumeStep(-1); break;
         case 'mute': toggleMute(); break;
-        case 'guide': toggleGuide(); break;
+        case 'guide': guideOrPlayPause(); break;
         case 'channels': toggleChannels(); break;
+        case 'vhs': slotPressed(); break;
         case 'cinema': toggleCinema(); break;
         case 'digit': pushDigit(value); break;
       }
@@ -513,12 +744,13 @@ function bindKeyboard() {
   document.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const k = e.key;
-    if (k === 'ArrowUp') channelStep(1);
-    else if (k === 'ArrowDown') channelStep(-1);
+    if (k === 'ArrowUp') channelUpOrFwd();
+    else if (k === 'ArrowDown') channelDownOrRew();
     else if (k === 'ArrowRight' || k === '+') volumeStep(1);
     else if (k === 'ArrowLeft' || k === '-') volumeStep(-1);
     else if (k === 'm' || k === 'M') toggleMute();
-    else if (k === 'g' || k === 'G') toggleGuide();
+    else if (k === 'g' || k === 'G') guideOrPlayPause();
+    else if (k === 'v' || k === 'V') slotPressed();
     else if (k === 'p' || k === 'P') togglePower();
     else if (k === 'c' || k === 'C') toggleCinema();
     else if (k === 'Escape' && state.cinema) setCinema(false);
@@ -532,6 +764,12 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) resyncIfDrifted();
 });
 
+// Sleeves are rendered on demand, so the shelf delegates rather than binding.
+el.shelf.addEventListener('click', (e) => {
+  const sleeve = e.target.closest('[data-tape]');
+  if (sleeve) insertTape(sleeve.dataset.tape);
+});
+
 bindButtons();
 bindKeyboard();
 
@@ -541,6 +779,7 @@ state.cinema = localStorage.getItem('retrotv.cinema') === '1';
 applyCinema();
 
 loadLineup().catch((e) => console.warn('Lineup prefetch failed', e));
+loadCatalogue().catch((e) => console.warn('VHS catalogue prefetch failed', e));
 
 // Debug/verification handle (harmless to ship; nothing secret in here).
 window.retrotv = {
