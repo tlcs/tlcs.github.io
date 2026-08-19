@@ -251,7 +251,10 @@ body {
   margin-top: 2px;
 }
 
+/* also the button that opens the channel list — a <button>, so it needs the
+   pointer; everything else here already overrides the UA button styling */
 .led-window {
+  cursor: pointer;
   background: #0a0d0a;
   border-radius: 4px;
   min-width: 78px;

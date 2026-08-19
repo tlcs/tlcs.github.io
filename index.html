@@ -17,6 +17,7 @@
             <canvas id="static-canvas" width="200" height="150"></canvas>
             <div class="crt-overlay"></div>
             <div id="guide" class="guide"></div>
+            <div id="channels" class="guide"></div>
             <div id="screen-off" class="screen-off covering"></div>
           </div>
         </div>
@@ -26,7 +27,8 @@
             <span class="brand">TELSTAR</span>
             <span class="model">CX-2140 STEREO</span>
           </div>
-          <div class="led-window"><span id="led" class="led"></span></div>
+          <button type="button" class="led-window" data-action="channels" title="Channel list"
+                  aria-label="Channel list"><span id="led" class="led"></span></button>
           <div class="panel-buttons">
             <button class="tv-btn" data-action="ch-down" title="Channel down">CH &minus;</button>
             <button class="tv-btn" data-action="ch-up" title="Channel up">CH +</button>

@@ -27,6 +27,7 @@ const state = {
   lineupFile: null,
   lineupDay: null,
   guideOpen: false,
+  channelsOpen: false,
   cinema: false,
   digitBuffer: '',
 };
@@ -46,6 +47,7 @@ const el = {
   led: document.getElementById('led'),
   staticCanvas: document.getElementById('static-canvas'),
   guide: document.getElementById('guide'),
+  channels: document.getElementById('channels'),
   screenOff: document.getElementById('screen-off'),
   powerLight: document.getElementById('power-light'),
   cinemaLight: document.getElementById('cinema-light'),
@@ -272,6 +274,7 @@ function setChannel(index, { withStatic = true } = {}) {
   showLed(ledPersistent());
   tuneToLive();
   if (state.guideOpen) renderGuide();
+  if (state.channelsOpen) renderChannels(); // move the green bar with the channel
 }
 
 function channelStep(delta) {
@@ -344,11 +347,53 @@ function renderGuide() {
   el.guide.querySelector('.guide-row.current')?.scrollIntoView({ block: 'center' });
 }
 
+// ---- Channel list (same teletext panel, reached from the LED display) -------
+
+function renderChannels() {
+  const cur = currentChannel();
+  const rows = state.channels.map((ch) => {
+    const current = ch === cur;
+    return `<div class="guide-row${current ? ' current' : ''}">
+      <span class="guide-time">${String(ch.number ?? 0).padStart(2, '0')}</span>
+      <span class="guide-title">${escapeHtml(ch.name || 'CHANNEL ' + ch.number)}</span>
+    </div>`;
+  });
+  el.channels.innerHTML = `
+    <div class="guide-header">
+      <span>CHANNELS</span>
+      <span>${state.channels.length} TOTAL</span>
+    </div>
+    <div class="guide-body">${rows.join('')}</div>
+    <div class="guide-footer">DISPLAY TO CLOSE</div>`;
+  el.channels.querySelector('.guide-row.current')?.scrollIntoView({ block: 'center' });
+}
+
+// The two overlays share the panel and the z-layer, so only one is ever open.
+
+function setGuideOpen(open) {
+  state.guideOpen = open;
+  el.guide.classList.toggle('open', open);
+  if (open) renderGuide();
+}
+
+function setChannelsOpen(open) {
+  state.channelsOpen = open;
+  el.channels.classList.toggle('open', open);
+  if (open) renderChannels();
+}
+
 function toggleGuide() {
   if (!state.powered) return;
-  state.guideOpen = !state.guideOpen;
-  el.guide.classList.toggle('open', state.guideOpen);
-  if (state.guideOpen) renderGuide();
+  const next = !state.guideOpen;
+  if (next && state.channelsOpen) setChannelsOpen(false);
+  setGuideOpen(next);
+}
+
+function toggleChannels() {
+  if (!state.powered) return;
+  const next = !state.channelsOpen;
+  if (next && state.guideOpen) setGuideOpen(false);
+  setChannelsOpen(next);
 }
 
 // ---- Cinema mode (picture size + native fullscreen) -------------------------
@@ -426,8 +471,10 @@ function powerOff() {
   clearTimeout(digitTimer);
   state.digitBuffer = '';
   state.guideOpen = false;
+  state.channelsOpen = false;
   adOnScreen = false;
   el.guide.classList.remove('open');
+  el.channels.classList.remove('open');
   staticFx.hide();
   player.stop();
   el.tv.classList.remove('on');
@@ -454,6 +501,7 @@ function bindButtons() {
         case 'vol-down': volumeStep(-1); break;
         case 'mute': toggleMute(); break;
         case 'guide': toggleGuide(); break;
+        case 'channels': toggleChannels(); break;
         case 'cinema': toggleCinema(); break;
         case 'digit': pushDigit(value); break;
       }
