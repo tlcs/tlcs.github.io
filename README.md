@@ -36,7 +36,8 @@ the YouTube iframe into existence on every visit, which needed readiness guards 
 ordering (wait for the player before tuning) rather than guarding around the race.
 
 Controls: power `P` · channel `↑`/`↓` or digits · volume `←`/`→` · mute `M` · guide `G` ·
-cinema `C`. Everything is also clickable on the TV front panel and the remote.
+cinema `C` · video library `V`. Everything is also clickable on the TV front panel and the
+remote. With a tape in, `↑`/`↓` become forward/rewind and `G` becomes play/pause.
 
 ## Cinema mode
 
@@ -52,8 +53,8 @@ width at all, and there it stays visible. It is never shown alongside the tube i
 Its CINEMA button goes with it, so on a wide viewport you leave via the front panel, `C`, or
 `Esc` — the panel button is always there.
 
-`Esc` (or F11) leaves. The LED flashes `16:9` / `4:3` as you toggle, an amber lamp stays lit
-while engaged, and the setting is remembered across visits.
+`Esc` (or F11) leaves. The LED flashes `16:9` / `4:3` as you toggle, the CINEMA button itself
+stays lit amber while engaged, and the setting is remembered across visits.
 
 ### Why it wins so much space
 
@@ -114,8 +115,13 @@ to a real click or keypress, never on page load.
 
 ## VHS mode
 
-The cabinet has a tape slot on its front panel. Press it and the **rental shelf** rises in the
-room below the set — sleeves standing face-out, grouped by genre. Pick one and it plays.
+The cabinet is a TV/VCR combi: its front panel is a **deck front**, with a tape slot taking the
+width the controls don't and carrying the TELSTAR brand on its lip — which is where the badge
+went, and how the slot gets to near cassette scale. The controls sit beside it as a 2×3 block,
+each column a pair (CH, VOL, GUIDE/CINEMA).
+
+Press the slot and the **rental shelf** rises in the room below the set — sleeves standing
+face-out, grouped by genre. Pick one and it plays.
 
 A tape is not broadcast, and the set knows the difference:
 
@@ -127,6 +133,8 @@ A tape is not broadcast, and the set knows the difference:
   They relabel themselves to `◀◀ ▶▶ ▶❙❙` while a tape is in, and change back on eject.
 - **Press the slot again to eject**, which returns to live TV, caught up to wherever the
   schedule has got to in the meantime.
+- **A tape that refuses to play is spat back out.** If the player errors, the LED shows `ERR`
+  and the set ejects to broadcast rather than sitting on static.
 
 Tapes **hold their position** like real ones — eject halfway through and it resumes there next
 visit, kept in `localStorage` per tape. Stop past the halfway mark and the sleeve says
@@ -147,10 +155,22 @@ YT_API_KEY=$(cat .keys) node tools/fetch-vhs.mjs
 That writes `vhs.json` with titles and runtimes. Sleeve art is the video's own thumbnail unless
 you supply a `cover` URL.
 
-**The script refuses tapes the tube cannot play.** A video whose uploader disabled embedding
-shows "Video unavailable" in the player, so it is dropped with a note saying which and why —
-better an honest gap in the shelf than a sleeve that plays nothing. If a film you want is
-rejected, look for another upload of it.
+**The script refuses tapes the tube cannot play**, naming each one and why — better an honest
+gap in the shelf than a sleeve that plays nothing. Two things disqualify a video, and both are
+common on full-length films:
+
+- **Embedding disabled** by the uploader. The player shows "Video unavailable".
+- **Age-restricted** (`ytAgeRestricted`). These never play in *any* embed — YouTube insists on a
+  signed-in age check on its own site. **The API still reports `embeddable: true` for them**, so
+  embeddability alone is not a sufficient test; this is checked separately, and it is the trap
+  worth remembering when a tape mysteriously won't start.
+
+Region-blocked videos are shipped but flagged, since they play for some visitors and not others.
+
+Expect a high rejection rate when hunting for films, so run candidates through the script before
+building anything around them. It reports on every id in the config, which means rejected ones
+can stay in `vhs.config.json` as a record of what was already tried. YouTube ids are always
+**11 characters** — a shorter one is a copy error, and shows up as "not found".
 
 ## Curating channels
 
@@ -269,3 +289,7 @@ sure the old key is revoked.
   fetch script before relying on sync.
 - Cinema mode's fullscreen half is best-effort: iOS Safari has no element fullscreen, so
   there the tube still goes widescreen but the browser chrome stays put.
+- Most full-length films on YouTube are either age-restricted or have embedding disabled, so
+  the VHS catalogue is limited to what will actually play in an embed. See *Curating tapes*.
+- The tape counter reads `H:MM`, not `H:MM:SS` — seven characters don't fit the LED window
+  without shrinking the digits below legibility, and four matches every other thing it shows.

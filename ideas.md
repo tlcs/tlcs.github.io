@@ -1,2 +1,11 @@
 - [ ] check why tv sometimes unpauses itself
-- [ ] git sta
+- [ ] keep same button description in vhs/tv mode so it is more retro/real
+- [ ] show error on led when trying to use vhs in cinema
+- [ ] auto refresh of catalogue (things may got stale) - gh actions, daily
+- [ ] disable/update guide/channels in vhs mode
+- [ ] fix button sizes in vhs mode
+- [ ] let buttons becomes bigger in cinema mode
+- [ ] maybe increase vertical size of panel to make buttons clearer
+- [ ] add rewind/play/inject/eject simple soundsgit  
+- [ ] test more with ads
+- [ ] add 18+ filter/check for regular vidoes, not only vhsgi
