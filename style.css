@@ -161,11 +161,13 @@ body {
   z-index: 5;
   display: none;
   flex-direction: column;
-  background: rgba(0, 0, 20, 0.92);
+  background: rgba(0, 0, 20, 0.96);
   color: #e8e8e8;
   font-family: "Courier New", monospace;
-  font-size: clamp(10px, 1.9vmin, 16px);
-  line-height: 1.55;
+  /* larger type wins readability at the cost of rows on screen — the body
+     scrolls and the current programme is scrolled into view anyway */
+  font-size: clamp(13px, 2.9vmin, 22px);
+  line-height: 1.5;
   padding: 3% 4%;
 }
 .guide.open { display: flex; }
@@ -192,10 +194,16 @@ body {
 .guide-body::-webkit-scrollbar-thumb { background: #2a2a55; border-radius: 3px; }
 .guide-body::-webkit-scrollbar-track { background: transparent; }
 
-.guide-row { display: flex; gap: 1.4em; padding: 0 0.6em; }
-.guide-row.current { background: #00a000; color: #001000; }
+.guide-row { display: flex; gap: 1.4em; padding: 0.1em 0.6em; }
+/* "on air" block: the old #001000-on-#00a000 was a thin dark face on mid green.
+   Brighter block + bold lifts it to ~9:1 and makes it legible at a glance. */
+.guide-row.current {
+  background: #16d316;
+  color: #001a00;
+  font-weight: 700;
+}
 .guide-time { color: #37e6e6; flex-shrink: 0; }
-.guide-row.current .guide-time { color: #001000; }
+.guide-row.current .guide-time { color: #001a00; }
 .guide-title {
   white-space: nowrap;
   overflow: hidden;
@@ -470,8 +478,11 @@ body {
 }
 
 /* ---- Cinema mode ------------------------------------------------------------
-   Widescreen tube + minimal chrome. The set, the LED, the remote and the key
-   hints all stay on screen — only the plastic around them gives way.          */
+   Widescreen tube + minimal chrome. The set, the LED and the key hints stay on
+   screen — only the plastic around them gives way. The remote is the exception:
+   beside the tube it costs ~150px of width, so on wide viewports it sits this
+   mode out and the picture takes the space. Below the small-screen breakpoint it
+   lives under the set, where it costs no width, and there it stays visible.   */
 
 body.cinema {
   --tube-ratio: 1.77778;   /* 16:9 — kills the letterbox bars on YouTube video */
@@ -481,7 +492,7 @@ body.cinema {
   --bezel-pad: 7px;
   --chrome-v: 84px;        /* measured: exact fit is ~68px, this keeps a safety margin */
   --tv-w-cap: 100vw;
-  --side-reserve: 150px;   /* remote 108 + setup gap 16 + room padding 16 + slack */
+  --side-reserve: 16px;    /* remote is hidden at this width — just room padding */
   overflow: hidden;        /* deterministic: no scrollbars in cinema */
 }
 
@@ -496,13 +507,14 @@ body.cinema .led-window { height: 26px; min-width: 68px; }
 body.cinema .led { font-size: 16px; }
 body.cinema .tv-btn { padding: 5px 7px; }
 body.cinema .tv-btn.power { font-size: 11px; padding: 5px 9px; }
-body.cinema .remote { transform: scale(0.9); transform-origin: bottom center; margin-bottom: 0; }
+body.cinema .remote { display: none; }
 body.cinema .hint { font-size: 10px; opacity: 0.7; }
 
 @media (max-width: 700px) {
-  /* remote reflows below the set, so the reserve moves from across to down */
-  body.cinema { --side-reserve: 16px; --chrome-v: 190px; }
-  body.cinema .remote { transform: none; }
+  /* remote sits below the set here, so it costs height rather than width —
+     bring it back, it isn't taking anything from the picture */
+  body.cinema { --chrome-v: 190px; }
+  body.cinema .remote { display: flex; transform: none; margin-bottom: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

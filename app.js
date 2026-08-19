@@ -12,7 +12,7 @@ const DRIFT_CHECK_MS = 15000;
 // Longest thing we'll treat as an ad. Nothing scheduled is this short, so a
 // player duration at or under this on a longer programme means an ad is on.
 const MAX_AD_S = 180;
-const STATIC_MIN_MS = 500;
+const STATIC_MIN_MS = 333;
 const LED_FLASH_MS = 2000;
 const DIGIT_ENTRY_MS = 1500;
 
@@ -267,7 +267,7 @@ function setChannel(index, { withStatic = true } = {}) {
   localStorage.setItem('retrotv.channel', String(currentChannel().number));
   if (withStatic) {
     staticFx.show();
-    playHiss(450);
+    playHiss(300);
   }
   showLed(ledPersistent());
   tuneToLive();
