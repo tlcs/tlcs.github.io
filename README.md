@@ -28,6 +28,13 @@ python3 -m http.server 8420
 
 Then open http://localhost:8420. Press the power button (or `P`).
 
+The set waits for that press on purpose. Starting itself on load was tried and reverted: Chrome
+refuses to autoplay with sound before a gesture, so it had to come up muted and hand the player
+back to the real mute setting on the first interaction — and powering on at load meant racing
+the YouTube iframe into existence on every visit, which needed readiness guards threaded through
+`setChannel()` and `tune()`. It stayed glitchy in Chrome. If you pick this up again, fix the
+ordering (wait for the player before tuning) rather than guarding around the race.
+
 Controls: power `P` · channel `↑`/`↓` or digits · volume `←`/`→` · mute `M` · guide `G` ·
 cinema `C`. Everything is also clickable on the TV front panel and the remote.
 
@@ -35,23 +42,37 @@ cinema `C`. Everything is also clickable on the TV front panel and the remote.
 
 The **CINEMA** button (front panel, remote, or `C`) is the set's picture-size control — the
 equivalent of the WIDE / P.SIZE button real sets grew in the late 90s. It gives the picture as
-much room as possible *without* dropping the illusion: the cabinet frame, LED display, remote
-and key hints all stay on screen, and only the plastic gives way.
+much room as possible *without* dropping the illusion: the cabinet frame, LED display and key
+hints all stay on screen, and only the plastic gives way.
+
+The remote is the one thing that steps aside. Standing beside the tube it costs ~150px of
+width, so on viewports wide enough to seat it there it is hidden for the duration and the
+picture takes the space. Below the 700px breakpoint it sits *under* the set, where it costs no
+width at all, and there it stays visible. It is never shown alongside the tube in cinema mode.
+Its CINEMA button goes with it, so on a wide viewport you leave via the front panel, `C`, or
+`Esc` — the panel button is always there.
 
 `Esc` (or F11) leaves. The LED flashes `16:9` / `4:3` as you toggle, an amber lamp stays lit
 while engaged, and the setting is remembered across visits.
 
 ### Why it wins so much space
 
-Two things compound, and the first matters more than trimming any bezel:
+Three things compound, and the first matters more than trimming any bezel:
 
 - **The tube reshapes from 4:3 to 16:9.** A 4:3 CRT letterboxes every YouTube video, so a
   quarter of the tube height was permanently black bars. Going widescreen reclaims all of it.
 - **The cabinet chrome shrinks** — thinner bezel and cabinet padding, compact front panel, no
   feet, tighter room padding — and the 880px desktop width cap is lifted.
+- **The remote's column is reclaimed** — `--side-reserve` drops from 150px to 16px once it is
+  hidden.
 
-Measured at a 1280×720 viewport: the actual video area goes from 217,152 px² to 675,675 px²,
+Measured at a 1280×720 viewport: the actual video area goes from ~217,000 px² to ~676,000 px²,
 **3.1× the picture**. On a landscape phone the gain is larger still.
+
+How much that last point adds depends on which of the three constraints binds. On an exactly
+16:9 viewport the height runs out first, so reclaiming the remote's column buys no extra size
+(the tube simply cannot get taller) — it is a tidier layout, not a bigger one. On taller or
+narrower windows the width binds and it is worth a further 1.2–1.3× in area.
 
 ### How it works
 
@@ -65,8 +86,8 @@ width: min(
 );
 ```
 
-Three competing constraints — a hard cap, the width left over beside the remote, and the
-height left over above the front panel — and the smallest wins. Every number in it is a custom
+Three competing constraints — a hard cap, the width left over beside the remote (when it is
+shown), and the height left over above the front panel — and the smallest wins. Every number in it is a custom
 property declared on `:root`, so **cinema mode is just a `body.cinema` block that redefines
 those properties** (`--tube-ratio` 1.333 → 1.778, `--chrome-v` 200px → 84px, and so on). There
 is no second layout and no duplicated formula.
