@@ -178,14 +178,15 @@ function playHiss(durationMs) {
 }
 
 // ---- Deck mechanism sound ---------------------------------------------------
-// Real recordings of a deck, played straight. Only a slice of each file is the
-// part we want, so rather than re-cutting the files the player is handed an
-// offset and a length — Web Audio takes a sub-range natively, which keeps the
-// source audio untouched and the cut points adjustable here in one place.
+// Real recordings of a deck, played straight. The files are already trimmed to
+// just the mechanism, so each plays whole. `offset` and `duration` are still
+// honoured if either is set, which is the cheap way to re-cut without touching
+// the audio; left out, a file plays end to end and the blue field takes its
+// length from the recording.
 
 const TAPE_SOUNDS = {
-  insert: { url: 'sound/vhs_in.mp3', offset: 2, duration: 4 },
-  eject: { url: 'sound/vhs_out.mp3', offset: 4, duration: 4 },
+  insert: { url: 'sound/trimmed_vhs_in.mp3' },
+  eject: { url: 'sound/trimmed_vhs_out.mp3' },
 };
 
 const tapeBuffers = { insert: null, eject: null };
@@ -220,8 +221,9 @@ function playTapeMechanism({ eject = false } = {}) {
 
   // clamp to what the file actually holds, so a shorter recording than expected
   // shortens the blue field to match instead of leaving it hanging on silence
-  const offset = Math.min(spec.offset, buffer.duration);
-  const duration = Math.min(spec.duration, Math.max(0, buffer.duration - offset));
+  const offset = Math.min(spec.offset ?? 0, buffer.duration);
+  const available = Math.max(0, buffer.duration - offset);
+  const duration = spec.duration ? Math.min(spec.duration, available) : available;
   if (duration <= 0) return synthTapeMechanism({ eject });
   if (state.muted || state.volume === 0) return duration;
 

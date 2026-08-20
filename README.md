@@ -129,22 +129,22 @@ mechanism underneath runs.
 
 The pause and the noise are most of what makes it feel like a machine rather than a button.
 
-The sound is a real recording of a deck — `sound/vhs_in.mp3` and `sound/vhs_out.mp3`. Only a
-slice of each file is wanted, so rather than re-cutting the audio the player is handed an
-offset and a length; Web Audio takes a sub-range natively. **The cut points live in one place**,
-`TAPE_SOUNDS` at the top of the deck-sound section in [app.js](app.js):
+The sound is a real recording of a deck, trimmed to just the mechanism and played whole. Both
+files are named in `TAPE_SOUNDS` at the top of the deck-sound section in [app.js](app.js):
 
 ```js
 const TAPE_SOUNDS = {
-  insert: { url: 'sound/vhs_in.mp3', offset: 2, duration: 4 },
-  eject: { url: 'sound/vhs_out.mp3', offset: 4, duration: 4 },
+  insert: { url: 'sound/trimmed_vhs_in.mp3' },
+  eject: { url: 'sound/trimmed_vhs_out.mp3' },
 };
 ```
 
+Each entry also accepts an optional `offset` and `duration` in seconds — Web Audio plays a
+sub-range natively, so a cut can be adjusted there without re-encoding the file.
+
 `playTapeMechanism()` returns the length it actually played, and the blue field holds for that
-long — so retiming the cut retimes the screen with it, and a file shorter than expected shortens
-the wait rather than leaving the screen hanging on silence. If the recordings can't be fetched or
-decoded, it falls back to a synthesised deck and the mode still works.
+long, so swapping in a longer or shorter recording retimes the screen by itself. If the files
+can't be fetched or decoded it falls back to a synthesised deck and the mode still works.
 
 A tape is not broadcast, and the set knows the difference:
 
