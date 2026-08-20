@@ -37,7 +37,9 @@ ordering (wait for the player before tuning) rather than guarding around the rac
 
 Controls: power `P` · channel `↑`/`↓` or digits · volume `←`/`→` · mute `M` · guide `G` ·
 cinema `C` · video library `V`. Everything is also clickable on the TV front panel and the
-remote. With a tape in, `↑`/`↓` become forward/rewind and `G` becomes play/pause.
+remote — though the remote only appears when it fits beside the set; wherever it would have to
+sit underneath it stows itself, since the front panel carries every control it has. With a tape
+in, `↑`/`↓` become forward/rewind and `G` becomes play/pause.
 
 ## Cinema mode
 
@@ -46,12 +48,9 @@ equivalent of the WIDE / P.SIZE button real sets grew in the late 90s. It gives 
 much room as possible *without* dropping the illusion: the cabinet frame, LED display and key
 hints all stay on screen, and only the plastic gives way.
 
-The remote is the one thing that steps aside. Standing beside the tube it costs ~150px of
-width, so on viewports wide enough to seat it there it is hidden for the duration and the
-picture takes the space. Below the 700px breakpoint it sits *under* the set, where it costs no
-width at all, and there it stays visible. It is never shown alongside the tube in cinema mode.
-Its CINEMA button goes with it, so on a wide viewport you leave via the front panel, `C`, or
-`Esc` — the panel button is always there.
+The remote steps aside here too — standing beside the tube it costs ~150px of width, which the
+picture takes instead. Its CINEMA button goes with it, so you leave via the front panel, `C`, or
+`Esc`; the panel button is always there.
 
 `Esc` (or F11) leaves. The LED flashes `16:9` / `4:3` as you toggle, the CINEMA button itself
 stays lit amber while engaged, and the setting is remembered across visits.

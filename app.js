@@ -61,6 +61,7 @@ const el = {
   shelf: document.getElementById('shelf'),
   osd: document.getElementById('vcr-osd'),
   slot: document.getElementById('vhs-slot'),
+  remote: document.querySelector('.remote'),
   screenOff: document.getElementById('screen-off'),
   powerLight: document.getElementById('power-light'),
 };
@@ -756,6 +757,7 @@ async function setCinema(on) {
   if (state.cinema === on) return;
   state.cinema = on;
   applyCinema();
+  applyRemoteVisibility(); // leaving cinema restores the remote — re-check it fits
   localStorage.setItem('retrotv.cinema', on ? '1' : '0');
   // OSD readout, the way a real set's picture-size button announced the mode
   if (state.powered) showLed(on ? '16:9' : '4:3', LED_FLASH_MS);
@@ -890,7 +892,21 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // The cabinet resizes with the viewport, so the shelf has to follow it.
+// The remote only earns its place standing beside the set. Once the row wraps it
+// drops underneath, where it crowds the shot and pushes everything else down —
+// so it stows itself instead. Whether it fits depends on the cabinet's height as
+// well as the viewport's width, which no media query can express, so it is
+// measured: show it, see if it landed below the cabinet, hide it if it did.
+function applyRemoteVisibility() {
+  el.remote.classList.remove('stowed');
+  const tv = el.tv.getBoundingClientRect();
+  const remote = el.remote.getBoundingClientRect();
+  if (remote.height === 0) return; // already hidden by CSS (narrow, or cinema)
+  el.remote.classList.toggle('stowed', remote.top >= tv.bottom - 2);
+}
+
 window.addEventListener('resize', () => {
+  applyRemoteVisibility();
   if (state.shelfOpen) alignShelfToCabinet();
 });
 
@@ -907,6 +923,7 @@ bindKeyboard();
 // page load can never re-enter fullscreen on its own.
 state.cinema = localStorage.getItem('retrotv.cinema') === '1';
 applyCinema();
+applyRemoteVisibility();
 
 loadLineup().catch((e) => console.warn('Lineup prefetch failed', e));
 loadCatalogue().catch((e) => console.warn('VHS catalogue prefetch failed', e));

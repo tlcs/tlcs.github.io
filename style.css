@@ -617,6 +617,9 @@ body {
   margin-bottom: 26px;
 }
 
+/* set by applyRemoteVisibility() when the row wraps and it would sit below */
+.remote.stowed { display: none; }
+
 .remote-top {
   width: 100%;
   display: flex;
@@ -702,11 +705,10 @@ body {
 
 @media (max-width: 700px) {
   .setup { align-items: center; }
-  .remote { flex-direction: row; width: auto; margin-bottom: 0; padding: 10px 14px; }
-  .remote-top { width: auto; }
-  /* laid on its side the IR window reads as a stray dash next to the power
-     button, so it sits this layout out */
-  .remote-ir { display: none; }
+  /* Below this width the remote could only sit under the set, laid on its side,
+     where it costs a lot of room and clutters the shot — and the TV's own front
+     panel already carries every control it has. So it simply isn't shown. */
+  .remote { display: none; }
   .front-panel { flex-wrap: wrap; }
   .feet { display: none; }
 }
@@ -745,13 +747,6 @@ body.cinema .tv-btn { padding: 5px 7px; }
 body.cinema .tv-btn.power { font-size: 13px; padding: 6px 11px; }
 body.cinema .remote { display: none; }
 body.cinema .hint { font-size: 10px; opacity: 0.7; }
-
-@media (max-width: 700px) {
-  /* remote sits below the set here, so it costs height rather than width —
-     bring it back, it isn't taking anything from the picture */
-  body.cinema { --chrome-v: 190px; }
-  body.cinema .remote { display: flex; transform: none; margin-bottom: 0; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .tv, .bezel, .screen { transition: none; }
