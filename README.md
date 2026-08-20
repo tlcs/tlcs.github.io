@@ -123,6 +123,29 @@ each column a pair (CH, VOL, GUIDE/CINEMA).
 Press the slot and the **rental shelf** rises in the room below the set — sleeves standing
 face-out, grouped by genre. Pick one and it plays.
 
+Loading and ejecting each take about four seconds, on purpose. The deck throws up its blue
+field — `PLAY ▶` going in, `EJECT` coming out — and holds it for exactly as long as the
+mechanism underneath runs.
+
+The pause and the noise are most of what makes it feel like a machine rather than a button.
+
+The sound is a real recording of a deck — `sound/vhs_in.mp3` and `sound/vhs_out.mp3`. Only a
+slice of each file is wanted, so rather than re-cutting the audio the player is handed an
+offset and a length; Web Audio takes a sub-range natively. **The cut points live in one place**,
+`TAPE_SOUNDS` at the top of the deck-sound section in [app.js](app.js):
+
+```js
+const TAPE_SOUNDS = {
+  insert: { url: 'sound/vhs_in.mp3', offset: 2, duration: 4 },
+  eject: { url: 'sound/vhs_out.mp3', offset: 4, duration: 4 },
+};
+```
+
+`playTapeMechanism()` returns the length it actually played, and the blue field holds for that
+long — so retiming the cut retimes the screen with it, and a file shorter than expected shortens
+the wait rather than leaving the screen hanging on silence. If the recordings can't be fetched or
+decoded, it falls back to a synthesised deck and the mode still works.
+
 A tape is not broadcast, and the set knows the difference:
 
 - **Schedule enforcement stops.** No drift correction, no programme boundaries, no channel

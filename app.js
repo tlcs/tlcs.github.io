@@ -48,6 +48,7 @@ let audioCtx = null;
 let adOnScreen = false;
 let ledFlashUntil = 0;
 let tapeTimer = null;
+let osdTimer = null;
 
 // ---- Elements --------------------------------------------------------------
 
@@ -58,6 +59,7 @@ const el = {
   guide: document.getElementById('guide'),
   channels: document.getElementById('channels'),
   shelf: document.getElementById('shelf'),
+  osd: document.getElementById('vcr-osd'),
   slot: document.getElementById('vhs-slot'),
   screenOff: document.getElementById('screen-off'),
   powerLight: document.getElementById('power-light'),
@@ -152,20 +154,240 @@ const staticFx = {
   },
 };
 
-function playHiss(durationMs) {
-  if (!audioCtx || state.muted || state.volume === 0) return;
-  const sampleCount = Math.ceil((audioCtx.sampleRate * durationMs) / 1000);
+// White noise of a given length, the raw material for both the aerial hiss and
+// the plastic-on-plastic scrape of a cassette going in.
+function noiseSource(durationS) {
+  const sampleCount = Math.ceil(audioCtx.sampleRate * durationS);
   const buffer = audioCtx.createBuffer(1, sampleCount, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
+  return src;
+}
+
+function playHiss(durationMs) {
+  if (!audioCtx || state.muted || state.volume === 0) return;
+  const src = noiseSource(durationMs / 1000);
   const gain = audioCtx.createGain();
   const level = 0.12 * (state.volume / 100);
   gain.gain.setValueAtTime(level, audioCtx.currentTime);
   gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + durationMs / 1000);
   src.connect(gain).connect(audioCtx.destination);
   src.start();
+}
+
+// ---- Deck mechanism sound ---------------------------------------------------
+// Real recordings of a deck, played straight. Only a slice of each file is the
+// part we want, so rather than re-cutting the files the player is handed an
+// offset and a length — Web Audio takes a sub-range natively, which keeps the
+// source audio untouched and the cut points adjustable here in one place.
+
+const TAPE_SOUNDS = {
+  insert: { url: 'sound/vhs_in.mp3', offset: 2, duration: 4 },
+  eject: { url: 'sound/vhs_out.mp3', offset: 4, duration: 4 },
+};
+
+const tapeBuffers = { insert: null, eject: null };
+let tapeSoundsLoading = null;
+
+// Decoding needs the AudioContext, which only exists once the set is switched
+// on — so this is kicked off from powerOn() and the buffers are warm long
+// before anyone gets as far as picking a tape.
+function loadTapeSounds() {
+  if (!audioCtx || tapeSoundsLoading) return tapeSoundsLoading;
+  tapeSoundsLoading = Promise.all(
+    Object.entries(TAPE_SOUNDS).map(async ([key, spec]) => {
+      try {
+        const resp = await fetch(spec.url);
+        if (!resp.ok) throw new Error(`${resp.status}`);
+        tapeBuffers[key] = await audioCtx.decodeAudioData(await resp.arrayBuffer());
+      } catch (e) {
+        console.warn(`Deck sound ${spec.url} unavailable — using the synthesised deck.`, e);
+      }
+    })
+  );
+  return tapeSoundsLoading;
+}
+
+// Returns how long the mechanism takes, so the blue field holds for exactly that
+// long — whether the sound is the recording, the synth, or silence.
+function playTapeMechanism({ eject = false } = {}) {
+  const key = eject ? 'eject' : 'insert';
+  const spec = TAPE_SOUNDS[key];
+  const buffer = tapeBuffers[key];
+  if (!buffer) return synthTapeMechanism({ eject });
+
+  // clamp to what the file actually holds, so a shorter recording than expected
+  // shortens the blue field to match instead of leaving it hanging on silence
+  const offset = Math.min(spec.offset, buffer.duration);
+  const duration = Math.min(spec.duration, Math.max(0, buffer.duration - offset));
+  if (duration <= 0) return synthTapeMechanism({ eject });
+  if (state.muted || state.volume === 0) return duration;
+
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const gain = audioCtx.createGain();
+  gain.gain.value = state.volume / 100;
+  src.connect(gain).connect(audioCtx.destination);
+  src.start(audioCtx.currentTime, offset, duration);
+  return duration;
+}
+
+// ---- Synthesised deck (fallback) --------------------------------------------
+// A VCR swallowing a cassette is a sequence of distinct machines, not one noise:
+// the shell scraping down the guides, the carriage motor dragging it under, the
+// threading arms pulling tape around the head drum, the drum spinning up. Each
+// gets its own voice below and they are scored against a clock, so the blue
+// field can hold the screen for exactly as long as the machine takes.
+
+const TAPE_INSERT_S = 2.4;
+const TAPE_EJECT_S = 2.2;
+
+// A small DC motor under load: a buzzy fundamental with gear flutter riding on
+// the amplitude and a bed of grind noise. The flutter is what stops it sounding
+// like an oscillator and starts it sounding like something turning.
+function motorRun(out, { at, dur, from, to, level, flutterHz = 0, grind = 0 }) {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(from, at);
+  osc.frequency.linearRampToValueAtTime(to, at + dur);
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 540;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(level, at + 0.06);
+  g.gain.setValueAtTime(level, at + Math.max(0.07, dur - 0.12));
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  osc.connect(lp).connect(g).connect(out);
+  osc.start(at);
+  osc.stop(at + dur + 0.02);
+
+  if (flutterHz) {
+    const lfo = audioCtx.createOscillator();
+    lfo.type = 'square';
+    lfo.frequency.value = flutterHz;
+    const depth = audioCtx.createGain();
+    depth.gain.value = level * 0.4;
+    lfo.connect(depth).connect(g.gain);
+    lfo.start(at);
+    lfo.stop(at + dur);
+  }
+
+  if (grind) {
+    const n = noiseSource(dur);
+    const bp = audioCtx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1150;
+    bp.Q.value = 0.7;
+    const ng = audioCtx.createGain();
+    ng.gain.setValueAtTime(0.0001, at);
+    ng.gain.exponentialRampToValueAtTime(grind, at + 0.08);
+    ng.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    n.connect(bp).connect(ng).connect(out);
+    n.start(at);
+  }
+}
+
+// Something heavy seating: a pitch drop with a noise body so it lands as plastic
+// and metal rather than as a tone.
+function clunk(out, { at, from = 210, to = 50, level = 0.5, body = 0.3 }) {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(from, at);
+  osc.frequency.exponentialRampToValueAtTime(to, at + 0.13);
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(level, at);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + 0.19);
+  osc.connect(g).connect(out);
+  osc.start(at);
+  osc.stop(at + 0.21);
+
+  if (body) {
+    const n = noiseSource(0.11);
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 980;
+    const ng = audioCtx.createGain();
+    ng.gain.setValueAtTime(body, at);
+    ng.gain.exponentialRampToValueAtTime(0.0001, at + 0.12);
+    n.connect(lp).connect(ng).connect(out);
+    n.start(at);
+  }
+}
+
+// A catch engaging, a ratchet detent, a spring settling.
+function tick(out, { at, level = 0.3, freq = 2600 }) {
+  const n = noiseSource(0.035);
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = freq;
+  bp.Q.value = 2.2;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(level, at);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + 0.04);
+  n.connect(bp).connect(g).connect(out);
+  n.start(at);
+}
+
+// Plastic sliding against plastic.
+function scrape(out, { at, dur, from, to, level }) {
+  const n = noiseSource(dur);
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 1.4;
+  bp.frequency.setValueAtTime(from, at);
+  bp.frequency.exponentialRampToValueAtTime(to, at + dur);
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(level, at + dur * 0.3);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  n.connect(bp).connect(g).connect(out);
+  n.start(at);
+}
+
+// Fallback only: used when the recordings can't be fetched or decoded.
+function synthTapeMechanism({ eject = false } = {}) {
+  const total = eject ? TAPE_EJECT_S : TAPE_INSERT_S;
+  if (!audioCtx || state.muted || state.volume === 0) return total;
+
+  const master = audioCtx.createGain();
+  master.gain.value = 1.95 * (state.volume / 100);
+  // the stages overlap, and the clunks are peaky — catch them rather than clip
+  const limiter = audioCtx.createDynamicsCompressor();
+  limiter.threshold.value = -8;
+  limiter.knee.value = 6;
+  limiter.ratio.value = 12;
+  limiter.attack.value = 0.002;
+  limiter.release.value = 0.12;
+  master.connect(limiter).connect(audioCtx.destination);
+
+  const t = audioCtx.currentTime;
+  const out = master;
+
+  if (!eject) {
+    scrape(out,    { at: t,        dur: 0.34, from: 1200, to: 2900, level: 0.40 });
+    tick(out,      { at: t + 0.30, level: 0.26 });                                  // catch engages
+    motorRun(out,  { at: t + 0.34, dur: 0.72, from: 118, to: 74, level: 0.20, flutterHz: 34, grind: 0.10 });
+    clunk(out,     { at: t + 1.04, from: 210, to: 52, level: 0.55, body: 0.34 });    // carriage seats
+    motorRun(out,  { at: t + 1.20, dur: 0.80, from: 66, to: 58, level: 0.17, flutterHz: 22, grind: 0.13 });
+    tick(out,      { at: t + 1.62, level: 0.16, freq: 2100 });                       // threading detents
+    tick(out,      { at: t + 1.86, level: 0.14, freq: 2400 });
+    clunk(out,     { at: t + 1.98, from: 150, to: 44, level: 0.38, body: 0.22 });
+    motorRun(out,  { at: t + 2.04, dur: 0.32, from: 44, to: 176, level: 0.11 });     // head drum spins up
+    tick(out,      { at: t + 2.32, level: 0.12, freq: 3200 });
+  } else {
+    tick(out,      { at: t,        level: 0.34 });                                   // mechanism releases
+    motorRun(out,  { at: t + 0.06, dur: 0.72, from: 60, to: 70, level: 0.17, flutterHz: 24, grind: 0.12 });
+    clunk(out,     { at: t + 0.80, from: 140, to: 46, level: 0.34, body: 0.22 });    // tape back in the shell
+    motorRun(out,  { at: t + 0.92, dur: 0.66, from: 74, to: 122, level: 0.20, flutterHz: 32, grind: 0.10 });
+    clunk(out,     { at: t + 1.58, from: 240, to: 58, level: 0.60, body: 0.38 });    // cassette pops up
+    scrape(out,    { at: t + 1.64, dur: 0.28, from: 2700, to: 1300, level: 0.34 });
+    tick(out,      { at: t + 1.98, level: 0.20, freq: 1800 });                       // spring settles
+  }
+
+  return total;
 }
 
 // Hide static once playback has actually started, holding it a minimum time
@@ -263,6 +485,7 @@ function handlePlayerState(playerState) {
     hideStaticWhenPlaying();
     if (state.tapeId) {
       state.tapePlaying = true;
+      hideVcrOsd(); // the film has the tube now — lift the blue field
       refreshLed();
       return; // no catch-up: a tape plays at its own pace
     }
@@ -550,9 +773,23 @@ function slotPressed() {
   else show();
 }
 
+// The blue field a deck put up while its mechanism worked. It is also the
+// reason inserting and ejecting take a beat instead of cutting instantly —
+// that pause is most of what makes it feel like a machine rather than a button.
+function showVcrOsd(text) {
+  el.osd.textContent = text;
+  el.osd.classList.add('open');
+}
+
+function hideVcrOsd() {
+  clearTimeout(osdTimer);
+  osdTimer = null;
+  el.osd.classList.remove('open');
+}
+
 function insertTape(id) {
   const tape = tapeById(id);
-  if (!tape || !state.powered) return;
+  if (!tape || !state.powered || osdTimer) return; // ignore clicks mid-transition
   // hand the tube to the deck: the broadcast clock stops applying
   clearTimeout(boundaryTimer);
   clearInterval(driftTimer);
@@ -564,11 +801,19 @@ function insertTape(id) {
   if (state.channelsOpen) setChannelsOpen(false);
   el.slot.classList.add('loaded');
   applyTransportLabels();
-  staticFx.show();
-  playHiss(300);
-  player.tune(id, tapePosition(id));
-  startTapeTimer();
   showLed('PLAY', LED_FLASH_MS);
+
+  staticFx.hide();
+  showVcrOsd('PLAY ▶');
+  // the blue field holds for exactly as long as the mechanism runs
+  const loadMs = playTapeMechanism() * 1000;
+  osdTimer = setTimeout(() => {
+    osdTimer = null;
+    if (state.tapeId !== id) return; // ejected or powered off while loading
+    staticFx.show(); // covers the buffering gap once the blue field lifts
+    player.tune(id, tapePosition(id));
+    startTapeTimer();
+  }, loadMs);
 }
 
 function ejectTape({ rewound = false } = {}) {
@@ -581,11 +826,21 @@ function ejectTape({ rewound = false } = {}) {
   applyTransportLabels();
   if (state.shelfOpen) renderShelf(); // drop the "loaded" ring, add any rewind nag
   showLed('EJECT', LED_FLASH_MS);
-  staticFx.show();
-  playHiss(300);
-  // back to live television, caught up to wherever the schedule has got to
-  tuneToLive();
-  driftTimer = setInterval(resyncIfDrifted, DRIFT_CHECK_MS);
+
+  player.stop();
+  staticFx.hide();
+  showVcrOsd('EJECT');
+  const ejectMs = playTapeMechanism({ eject: true }) * 1000;
+  clearTimeout(osdTimer);
+  osdTimer = setTimeout(() => {
+    osdTimer = null;
+    if (!state.powered || state.tapeId) return; // powered off, or another tape went in
+    hideVcrOsd();
+    staticFx.show();
+    // back to live television, caught up to wherever the schedule has got to
+    tuneToLive();
+    driftTimer = setInterval(resyncIfDrifted, DRIFT_CHECK_MS);
+  }, ejectMs);
 }
 
 function tapePlayPause() {
@@ -682,6 +937,7 @@ async function powerOn() {
   el.powerLight.classList.add('on');
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   audioCtx.resume();
+  loadTapeSounds(); // decode the deck recordings while the set warms up
   staticFx.show();
   playHiss(700);
   try {
@@ -717,6 +973,7 @@ function powerOff() {
   state.tapeId = null;
   state.tapePlaying = false;
   stopTapeTimer();
+  hideVcrOsd();
   el.slot.classList.remove('loaded');
   applyTransportLabels();
   setShelfOpen(false);

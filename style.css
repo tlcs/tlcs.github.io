@@ -124,6 +124,28 @@ body {
 }
 #static-canvas.visible { display: block; }
 
+/* ---- VCR on-screen display -------------------------------------------------
+   The blue field a deck threw up while the mechanism worked. Sits at the same
+   layer as the static but later in the DOM, so it covers the noise while the
+   CRT scanlines above still fall across it.                                  */
+
+.vcr-osd {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: none;
+  background: #2a1fa0;
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  font-size: clamp(15px, 4.2vmin, 34px);
+  letter-spacing: 0.16em;
+  padding: 6% 7%;
+  /* squared-off edges read closer to a bitmap OSD than smoothed type does */
+  text-shadow: 0 0 1px #fff;
+}
+.vcr-osd.open { display: block; }
+
 .crt-overlay {
   position: absolute;
   inset: 0;
