@@ -143,8 +143,9 @@ Each entry also accepts an optional `offset` and `duration` in seconds — Web A
 sub-range natively, so a cut can be adjusted there without re-encoding the file.
 
 `playTapeMechanism()` returns the length it actually played, and the blue field holds for that
-long, so swapping in a longer or shorter recording retimes the screen by itself. If the files
-can't be fetched or decoded it falls back to a synthesised deck and the mode still works.
+long, so swapping in a longer or shorter recording retimes the screen by itself. If a file can't
+be fetched or decoded the deck runs silent — the blue field still holds for a beat rather than
+cutting straight to the picture, so the mode keeps working without its sound.
 
 A tape is not broadcast, and the set knows the difference:
 
