@@ -7,6 +7,8 @@
   --plastic: #323236;
   --plastic-lo: #1c1c1f;
   --led-green: #4dff6a;
+  --led-amber: #ffb020;  /* the deck's colour: display and legend both go amber
+                            while a tape is in, so the source reads at a glance */
   --font-ui: "Helvetica Neue", Arial, sans-serif;
 
   /* Cabinet geometry. Cinema mode works by overriding these on body.cinema —
@@ -298,6 +300,13 @@ body {
   white-space: pre;
 }
 
+/* Aerial vs deck. Green digits are a channel; amber digits are a tape counter,
+   which is legible from across the room without reading the number itself. */
+.tv.tape-in .led {
+  color: var(--led-amber);
+  text-shadow: 0 0 6px rgba(255, 176, 32, 0.8), 0 0 14px rgba(255, 176, 32, 0.35);
+}
+
 /* Two rows of three. Each column is a pair (CH, VOL, GUIDE/CINEMA), which costs
    half the width the single row did — that reclaimed width becomes the tape slot. */
 .panel-buttons {
@@ -384,6 +393,12 @@ body {
   color: #9a9aa4;
   position: relative;
   z-index: 1;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+/* the legend backlights while the deck has the tube, the way a real one did */
+.tv.tape-in .slot-vhs {
+  color: var(--led-amber);
+  text-shadow: 0 0 5px rgba(255, 176, 32, 0.85), 0 0 12px rgba(255, 176, 32, 0.45);
 }
 
 /* a loaded tape shows its edge sticking out of the mouth */

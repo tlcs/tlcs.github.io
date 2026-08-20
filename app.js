@@ -650,7 +650,7 @@ function insertTape(id) {
   if (state.guideOpen) setGuideOpen(false);
   if (state.channelsOpen) setChannelsOpen(false);
   el.slot.classList.add('loaded');
-  applyTransportLabels();
+  applyDeckState();
   showLed('PLAY', LED_FLASH_MS);
 
   staticFx.hide();
@@ -673,7 +673,7 @@ function ejectTape({ rewound = false } = {}) {
   state.tapePlaying = false;
   stopTapeTimer();
   el.slot.classList.remove('loaded');
-  applyTransportLabels();
+  applyDeckState();
   if (state.shelfOpen) renderShelf(); // drop the "loaded" ring, add any rewind nag
   showLed('EJECT', LED_FLASH_MS);
 
@@ -723,9 +723,12 @@ function stopTapeTimer() {
   tapeTimer = null;
 }
 
-// The same buttons, relabelled — CH becomes the transport, GUIDE becomes play.
-function applyTransportLabels() {
+// Everything on the cabinet that has to know whether the tube is showing the
+// aerial or the deck: the transport labels, the slot's action, and the amber
+// state that puts the VHS legend and the counter on the deck's colour.
+function applyDeckState() {
   const tape = !!state.tapeId;
+  el.tv.classList.toggle('tape-in', tape);
   document.querySelectorAll('[data-label-tv]').forEach((b) => {
     b.textContent = tape ? b.dataset.labelTape : b.dataset.labelTv;
   });
@@ -825,7 +828,7 @@ function powerOff() {
   stopTapeTimer();
   hideVcrOsd();
   el.slot.classList.remove('loaded');
-  applyTransportLabels();
+  applyDeckState();
   setShelfOpen(false);
   staticFx.hide();
   player.stop();

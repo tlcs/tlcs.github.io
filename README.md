@@ -152,6 +152,9 @@ A tape is not broadcast, and the set knows the difference:
 - **Schedule enforcement stops.** No drift correction, no programme boundaries, no channel
   changes — the aerial is effectively unplugged until the tape comes out.
 - **You can pause.** That's the whole point of owning the tape rather than catching the airing.
+- **The set shows which source is live.** The `VHS` legend on the slot lip backlights amber, and
+  the LED goes amber with it — green digits are a channel, amber digits are a tape counter, so
+  the source reads from across the room without reading the number.
 - **The LED becomes a tape counter**, `H:MM`, the way every VCR's display did.
 - **The buttons become the transport.** `CH −/+` rewind and forward 30s, `GUIDE` is play/pause.
   They relabel themselves to `◀◀ ▶▶ ▶❙❙` while a tape is in, and change back on eject.
