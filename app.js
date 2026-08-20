@@ -504,11 +504,26 @@ function sleeveHtml(tape) {
   </button>`;
 }
 
+// The shelf is furniture standing under the set, so it lines up with the
+// cabinet. Left to the room's centring it would centre under the TV-and-remote
+// pair instead, hanging out to the left of the TV by half the remote's width.
+// The offset depends on whether the remote is beside the set, wrapped below it
+// or hidden, so it's measured rather than guessed.
+function alignShelfToCabinet() {
+  if (el.shelf.hidden) return;
+  const tv = el.tv.getBoundingClientRect();
+  el.shelf.style.width = `${Math.round(tv.width)}px`;
+  el.shelf.style.transform = 'none';
+  const dx = Math.round(tv.left - el.shelf.getBoundingClientRect().left);
+  el.shelf.style.transform = dx ? `translateX(${dx}px)` : 'none';
+}
+
 function setShelfOpen(open) {
   state.shelfOpen = open;
   el.shelf.hidden = !open;
   if (!open) return;
   renderShelf();
+  alignShelfToCabinet();
   // the shelf sits under the set, which can put it below the fold — look down at
   // it, the way you would in the shop
   const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -762,6 +777,11 @@ function bindKeyboard() {
 
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) resyncIfDrifted();
+});
+
+// The cabinet resizes with the viewport, so the shelf has to follow it.
+window.addEventListener('resize', () => {
+  if (state.shelfOpen) alignShelfToCabinet();
 });
 
 // Sleeves are rendered on demand, so the shelf delegates rather than binding.
