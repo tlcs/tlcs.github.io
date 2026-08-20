@@ -93,6 +93,10 @@ async function videoDetails(ids, apiKey, channelLabel) {
         console.warn(`  skip ${id} (${channelLabel}): no duration (live stream or premiere?)`);
         continue;
       }
+      if (item.contentDetails?.contentRating?.ytRating === 'ytAgeRestricted') {
+        console.warn('  age-restricted — will not play in an embed');
+        continue;
+      }
       videos.push({ id, title: item.snippet?.title ?? id, duration });
     }
   }
