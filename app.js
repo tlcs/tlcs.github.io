@@ -776,8 +776,10 @@ function stopTapeTimer() {
 function applyDeckState() {
   const tape = !!state.tapeId;
   el.tv.classList.toggle('tape-in', tape);
-  document.querySelectorAll('[data-label-tv]').forEach((b) => {
-    b.textContent = tape ? b.dataset.labelTape : b.dataset.labelTv;
+  // the labels themselves swap in CSS off `.tape-in`; only the tooltips, which
+  // CSS can't reach, are rewritten here
+  document.querySelectorAll('[data-title-tv]').forEach((b) => {
+    b.title = tape ? b.dataset.titleTape : b.dataset.titleTv;
   });
   el.slot.title = tape ? 'Eject tape' : 'Video library';
   el.slot.setAttribute('aria-label', tape ? 'Eject tape' : 'Video library');

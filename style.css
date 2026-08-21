@@ -361,6 +361,33 @@ body {
   cursor: pointer;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
+/* Transport marks are drawn, not typed. ◀ and ▶ come from different fallback
+   fonts on some systems — ◀ measured 8.6x12 against ▶ at 7.7x9 here — so the
+   rewind key rendered visibly larger than the forward one. Paths can't drift. */
+/* The two labels overlay rather than replace each other, so the key is always
+   sized by its text and never resizes when a tape goes in or comes out. The
+   tape mark is taken out of flow instead of the button being made a grid or
+   flex container: WebKit ignored display:grid on <button> until Safari 16, and
+   this needs no layout mode the element might refuse. */
+.tv-btn[data-title-tv] { position: relative; }
+.lbl-tape {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+}
+.tv.tape-in .lbl-tv { visibility: hidden; }
+.tv.tape-in .lbl-tape { visibility: visible; }
+
+.ico-t {
+  display: block;
+  height: 1.15em;
+  width: 1.75em;
+  fill: currentColor;
+}
+
 .tv-btn:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(0, 0, 0, 0.6);

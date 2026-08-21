@@ -28,13 +28,23 @@
                   aria-label="Channel list"><span id="led" class="led"></span></button>
           <!-- 2x3 block: each column is a pair, which frees the width the tape slot needs -->
           <div class="panel-buttons">
-            <button class="tv-btn" data-action="ch-down" title="Channel down"
-                    data-label-tv="CH &minus;" data-label-tape="&#9664;&#9664;">CH &minus;</button>
+            <button class="tv-btn" data-action="ch-down"
+                    data-title-tv="Channel down" data-title-tape="Rewind 30 seconds"
+                    title="Channel down"><span class="lbl-tv">CH &minus;</span>
+              <span class="lbl-tape" aria-hidden="true"><svg class="ico-t" viewBox="0 0 24 16"
+                ><path d="M11 2 2 8l9 6z"/><path d="M21 2l-9 6 9 6z"/></svg></span></button>
             <button class="tv-btn" data-action="vol-down" title="Volume down">VOL &minus;</button>
-            <button class="tv-btn" data-action="guide" title="Programme guide"
-                    data-label-tv="GUIDE" data-label-tape="&#9654;&#10073;&#10073;">GUIDE</button>
-            <button class="tv-btn" data-action="ch-up" title="Channel up"
-                    data-label-tv="CH +" data-label-tape="&#9654;&#9654;">CH +</button>
+            <button class="tv-btn" data-action="guide"
+                    data-title-tv="Programme guide" data-title-tape="Play / pause"
+                    title="Programme guide"><span class="lbl-tv">GUIDE</span>
+              <span class="lbl-tape" aria-hidden="true"><svg class="ico-t" viewBox="0 0 24 16"
+                ><path d="M3 2l9 6-9 6z"/><rect x="14.5" y="2" width="3.5" height="12"/><rect
+                  x="20" y="2" width="3.5" height="12"/></svg></span></button>
+            <button class="tv-btn" data-action="ch-up"
+                    data-title-tv="Channel up" data-title-tape="Forward 30 seconds"
+                    title="Channel up"><span class="lbl-tv">CH +</span>
+              <span class="lbl-tape" aria-hidden="true"><svg class="ico-t" viewBox="0 0 24 16"
+                ><path d="M3 2l9 6-9 6z"/><path d="M13 2l9 6-9 6z"/></svg></span></button>
             <button class="tv-btn" data-action="vol-up" title="Volume up">VOL +</button>
             <button class="tv-btn" data-action="cinema" title="Cinema mode (C)" aria-pressed="false">CINEMA</button>
           </div>
