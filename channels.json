@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-20T21:23:43.596Z",
+  "generatedAt": "2026-08-21T22:10:35.982Z",
   "channels": [
     {
       "number": 1,
@@ -1293,6 +1293,82 @@
           "id": "xatjs3N5SFE",
           "title": "Wiosna 1988 w Śródmieściu",
           "duration": 300
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": "Informacje",
+      "videos": [
+        {
+          "id": "BnzjBVQeSpA",
+          "title": "Dziennik Telewizyjny - 4.06.1989",
+          "duration": 1346
+        },
+        {
+          "id": "s-dgc4eV5PE",
+          "title": "Dziennik Telewizyjny | 11.08.1986 r.",
+          "duration": 1862
+        },
+        {
+          "id": "zucySl3QmMo",
+          "title": "Dziennik Telewizyjny | 10.08.1984 r.",
+          "duration": 1916
+        },
+        {
+          "id": "LQOW_Z_EkwE",
+          "title": "Dziennik Telewizyjny | 09.08.1984 r.",
+          "duration": 1872
+        },
+        {
+          "id": "cre8p3q1vds",
+          "title": "Dziennik Telewizyjny | 10.01.1989 r.",
+          "duration": 1957
+        },
+        {
+          "id": "d9-IBedEHXc",
+          "title": "Dziennik Telewizyjny  | 12.08.1988r.",
+          "duration": 1829
+        },
+        {
+          "id": "Y87mm1EPzMk",
+          "title": "Dziennik Telewizyjny | 09.01.1989 r.",
+          "duration": 1879
+        },
+        {
+          "id": "LQOW_Z_EkwE",
+          "title": "Dziennik Telewizyjny | 09.08.1984 r.",
+          "duration": 1872
+        },
+        {
+          "id": "zucySl3QmMo",
+          "title": "Dziennik Telewizyjny | 10.08.1984 r.",
+          "duration": 1916
+        },
+        {
+          "id": "s-dgc4eV5PE",
+          "title": "Dziennik Telewizyjny | 11.08.1986 r.",
+          "duration": 1862
+        },
+        {
+          "id": "r2ir9KYdnNw",
+          "title": "Dziennik Telewizyjny | 13.08.1987 r.",
+          "duration": 1789
+        },
+        {
+          "id": "d9-IBedEHXc",
+          "title": "Dziennik Telewizyjny  | 12.08.1988r.",
+          "duration": 1829
+        },
+        {
+          "id": "cre8p3q1vds",
+          "title": "Dziennik Telewizyjny | 10.01.1989 r.",
+          "duration": 1957
+        },
+        {
+          "id": "k25qujPkVqs",
+          "title": "DZIENNIK TELEWIZYJNY 17.11.89 (OSTATNI)",
+          "duration": 1143
         }
       ]
     }
