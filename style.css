@@ -403,7 +403,9 @@ body {
   /* takes the width the controls leave, but stops at roughly cassette scale —
      a slot wider than the tape it swallows stops reading as a slot */
   max-width: 420px;
-  height: 30px;
+  /* just under the button block beside it (42px) — a deck face reads as a slab,
+     and at 30px it looked like a slot cut in something thinner */
+  height: 38px;
   border: 1px solid #101014;
   border-radius: 3px;
   background: linear-gradient(180deg, #0d0d10 0%, #000 45%, #0a0a0d 100%);
@@ -796,7 +798,7 @@ body.cinema .front-panel { gap: 10px; margin-top: 6px; padding: 3px 4px 2px; }
 /* cinema exists to give the picture room — a shelf of tapes beside it defeats
    the point, so the library sits this mode out too */
 body.cinema .shelf { display: none; }
-body.cinema .vhs-slot { height: 24px; }
+body.cinema .vhs-slot { height: 40px; }  /* against a 46px button block */
 body.cinema .slot-brand { font-size: 10px; }
 body.cinema .led-window { height: 26px; min-width: 68px; }
 body.cinema .led { font-size: 16px; }
