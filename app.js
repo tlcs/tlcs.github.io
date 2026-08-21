@@ -467,7 +467,44 @@ function renderGuide() {
 
 // ---- Channel list (same teletext panel, reached from the LED display) -------
 
+// Clock format for the panel: full H:MM:SS, unlike the LED's cramped four
+// characters, because here there is room for it.
+function formatClock(seconds) {
+  const s = Math.max(0, Math.floor(seconds));
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const ss = String(s % 60).padStart(2, '0');
+  return `${Math.floor(s / 3600)}:${mm}:${ss}`;
+}
+
+// With a tape in, the display button shows what is on the tape rather than the
+// channel line-up — there is no channel to change to, and the useful thing is
+// where you are in the film. Same panel, larger type, nothing to scroll.
+function renderTapeInfo() {
+  const tape = tapeById(state.tapeId);
+  if (!tape) return;
+  el.channels.innerHTML = `
+    <div class="guide-header">
+      <span>TAPE</span>
+      <span>${escapeHtml(tape.genre || 'Inne')}</span>
+    </div>
+    <div class="tape-info">
+      <p class="tape-title">${escapeHtml(tape.title || tape.id)}</p>
+      <p class="tape-line"><span class="guide-time">LENGTH</span><span>${formatClock(tape.duration)}</span></p>
+      <p class="tape-line"><span class="guide-time">POSITION</span><span class="tape-pos">${formatClock(player.getCurrentTime())}</span></p>
+    </div>
+    <div class="guide-footer">DISPLAY TO CLOSE</div>`;
+}
+
+// Repaints just the running figure, so the panel doesn't rebuild every second.
+function refreshTapeInfoPosition() {
+  const pos = el.channels.querySelector('.tape-pos');
+  if (pos) pos.textContent = formatClock(player.getCurrentTime());
+}
+
 function renderChannels() {
+  // the panel serves two different jobs depending on what the tube is showing
+  el.channels.classList.toggle('tape-panel', !!state.tapeId);
+  if (state.tapeId) return renderTapeInfo();
   const cur = currentChannel();
   const rows = state.channels.map((ch) => {
     const current = ch === cur;
@@ -676,6 +713,7 @@ function ejectTape({ rewound = false } = {}) {
   el.slot.classList.remove('loaded');
   applyDeckState();
   if (state.shelfOpen) renderShelf(); // drop the "loaded" ring, add any rewind nag
+  if (state.channelsOpen) renderChannels(); // tape panel reverts to the channel list
   showLed('EJECT', LED_FLASH_MS);
 
   player.stop();
@@ -716,6 +754,7 @@ function startTapeTimer() {
     if (!state.tapeId) return;
     saveTapePosition(state.tapeId, player.getCurrentTime());
     refreshLed();
+    if (state.channelsOpen) refreshTapeInfoPosition();
   }, TAPE_TICK_MS);
 }
 

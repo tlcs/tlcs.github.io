@@ -242,6 +242,36 @@ body {
   letter-spacing: 0.1em;
 }
 
+/* ---- Tape info panel -------------------------------------------------------
+   Same teletext panel as the channel list, but with a tape in there are only
+   three things to say — so the type grows, and nothing scrolls or highlights. */
+
+.guide.tape-panel { font-size: clamp(15px, 3.6vmin, 30px); }
+
+.tape-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.9em;
+  padding: 0 0.6em;
+  overflow: hidden;
+}
+
+.tape-title {
+  text-transform: uppercase;
+  line-height: 1.25;
+  /* a long title wraps rather than scrolls, capped so it can't crowd the figures */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tape-line { display: flex; gap: 1.2em; align-items: baseline; }
+.tape-line .guide-time { min-width: 6em; }
+.tape-pos { font-variant-numeric: tabular-nums; }
+
 /* ---- Front panel ---------------------------------------------------------- */
 
 .front-panel {
