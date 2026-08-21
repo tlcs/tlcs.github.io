@@ -406,13 +406,24 @@ body {
   /* just under the button block beside it (42px) — a deck face reads as a slab,
      and at 30px it looked like a slot cut in something thinner */
   height: 38px;
-  border: 1px solid #101014;
+  border: 1px solid #0a0a0d;
   border-radius: 3px;
-  background: linear-gradient(180deg, #0d0d10 0%, #000 45%, #0a0a0d 100%);
+  /* Read as a cassette door rather than a painted rectangle: a narrow slit along
+     the top is the mouth, and the flap face fills the rest. The slit is kept
+     tight and high so the lit bevel below it clears the printed labels, which
+     sit on the flap where a real deck put them. A fine horizontal grain keeps
+     the plastic from looking like a void. */
+  background-image:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.016) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg,
+      #000 0%, #000 8%,          /* the slit the tape goes into — a few px only */
+      #1e1e23 10.5%,             /* flap face begins */
+      #191920 46%, #131318 74%, #0c0c10 100%);
   box-shadow:
-    inset 0 4px 7px rgba(0, 0, 0, 0.95),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.09),
-    0 1px 0 rgba(255, 255, 255, 0.05);
+    inset 0 5px 8px rgba(0, 0, 0, 0.95),    /* depth of the slit above the flap */
+    inset 0 -2px 0 rgba(0, 0, 0, 0.8),      /* flap sitting into the housing */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035), /* moulded rim, not a cut edge */
+    0 1px 0 rgba(255, 255, 255, 0.07);      /* cabinet surface catching light below */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -426,11 +437,13 @@ body {
 .vhs-slot::after {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 50%;
+  /* the lit bevel along the flap's top edge — what actually sells the depth */
+  left: 8px;
+  right: 8px;
+  top: 9.5%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04));
 }
 .vhs-slot:active { transform: translateY(1px); }
 
@@ -465,15 +478,17 @@ body {
   position: absolute;
   left: 22%;
   right: 22%;
-  top: 50%;
-  height: 0;
-  border-radius: 1px;
-  background: linear-gradient(180deg, #3a3a40, #16161a);
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.8);
-  transition: height 0.25s ease, transform 0.25s ease;
-  transform: translateY(0);
+  /* A 3.5px slit is too fine for a cassette to stand proud of, so a loaded tape
+     shows by filling the mouth instead: it slides down into the slit, turning
+     that sliver of black into tape plastic. */
+  top: 0;
+  height: 4px;
+  border-radius: 0 0 1px 1px;
+  background: linear-gradient(180deg, #303037, #1a1a20);
+  transform: translateY(-5px);
+  transition: transform 0.25s ease;
 }
-.vhs-slot.loaded .slot-tape { height: 7px; transform: translateY(-3px); }
+.vhs-slot.loaded .slot-tape { transform: translateY(0); }
 
 /* auto margin keeps power on the right edge when the capped slot leaves slack */
 .power-cluster { display: flex; align-items: center; gap: 9px; margin-left: auto; }
