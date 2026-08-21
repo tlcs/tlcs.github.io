@@ -646,7 +646,14 @@ function setShelfOpen(open) {
 function slotPressed() {
   if (!state.powered) return;
   if (state.tapeId) {
-    ejectTape();
+    ejectTape(); // ejecting works in cinema too — you can always get the tape out
+    return;
+  }
+  // The shelf stands in the room below the set, which cinema mode hides to give
+  // the picture the space. Opening it there would do nothing you could see, so
+  // the display says why rather than leaving the press looking broken.
+  if (state.cinema) {
+    showLed('CINE', LED_FLASH_MS);
     return;
   }
   if (state.shelfOpen) {

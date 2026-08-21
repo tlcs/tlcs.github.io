@@ -161,7 +161,9 @@ A tape is not broadcast, and the set knows the difference:
 - **The buttons become the transport.** `CH −/+` rewind and forward 30s, `GUIDE` is play/pause.
   They relabel themselves to `◀◀ ▶▶ ▶❙❙` while a tape is in, and change back on eject.
 - **Press the slot again to eject**, which returns to live TV, caught up to wherever the
-  schedule has got to in the meantime.
+  schedule has got to in the meantime. Ejecting works in cinema mode too — a tape can always
+  come out. Reaching for the *library* there just flashes `CINE`, since the shelf is hidden in
+  that mode and opening it would do nothing you could see.
 - **A tape that refuses to play is spat back out.** If the player errors, the LED shows `ERR`
   and the set ejects to broadcast rather than sitting on static.
 
